@@ -1,30 +1,55 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from .Server_models import User
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import db # from __init__.py import db
+from flask_login import login_user, login_required, logout_user, current_user
 
 """also known as auth in vid"""
 """the file is a blueprint of the website - a blueprint means there are just a bunch of routes defined; helps organize"""
+"""hash imports converts inputted password to give better security and protection, it has no inverse to find original password"""
 
-server_authorization = Blueprint('server_auth',__name__) #first argument is name of blueprint
+server_authorization = Blueprint('server_authorization',__name__) #first argument is name of blueprint
 
 
 @server_authorization.route('/login', methods=['GET','POST'])
 def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                flash('Logged in successfully!',category='success')
+                login_user(user, remember=True)
+                return redirect(url_for('Server_routes.home'))
+            else:
+                flash('Incorrect password, try again.', category='error')
+        else:
+            flash('Email does not exist.', category='error')
+
     return render_template("login.html", boolean=True)
 
 @server_authorization.route('/logout')
+@login_required
 def logout():
-    return "<p>logout</p>"
+    logout_user()
+    return redirect(url_for('server_authorization.login'))
 
 @server_authorization.route('/sign-up', methods=['GET','POST'])
 def sign_up():
     if request.method == 'POST':
         email = request.form.get('email')
-        firstName = request.form.get('firstName')
+        first_name = request.form.get('firstName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 
-        if len(email) < 4:
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already exists.', category='error')
+        elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
-        elif len(firstName) < 2:
+        elif len(first_name) < 2:
             flash('First name must be greater than 1 character.', category='error')
         elif password1 != password2:
             flash('Passwords do not match.', category='error')
@@ -32,6 +57,12 @@ def sign_up():
             flash('Password must be greater than 6 characters.', category='error')
         else:
             # add user to database
+            """sha256 is hashing method"""
+            new_user = User(email=email, first_name=first_name, password=generate_password_hash(password1, method='sha256'))
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(user, remember=True)
             flash('Account created!', category='success')
+            return redirect(url_for('Server_routes.home'))
 
     return render_template("sign_up.html")

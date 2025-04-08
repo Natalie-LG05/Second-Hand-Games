@@ -1,6 +1,6 @@
-from SHG_Code_Stuffs import web_creation
+from SHG_Code_Stuffs import create_app
 
-app = web_creation()
+app = create_app()
 
 if __name__ == '__main__':
     """debug=True: automatically reruns web server when changes are made"""
