@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
-from .models import Note
+from .models import Product,Cart,Order
 from . import db
+from intasend import APIServie
 import json
 
-views = Blueprint('views', __name__)
 
+views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
@@ -19,7 +20,7 @@ def home():
             new_note = Note(data=note, user_id=current_user.id)  #providing the schema for the note 
             db.session.add(new_note) #adding the note to the database 
             db.session.commit()
-            flash('Note added!', category='success')
+            flash('Listing Created!', category='success')
 
     return render_template("home.html", user=current_user)
 
