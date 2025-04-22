@@ -1,54 +1,60 @@
 
 {% extends 'base.html' %}
 
-{% block title %} Search {% endblock %}
+{% block title %} Shop Items {% endblock %}
 
 
 {% block body %}
 
 {% if items | length < 1 %}
-<h3 style="color: white;">No Items Match your Search query</h3>
+<h3 style="color: white;">No Shop Items </h3>
 
 {% else %}
 
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Date Added</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Previous Price</th>
+            <th scope="col">Current Price</th>
+            <th scope="col">In Stock</th>
+            <th scope="col">Product Picture</th>
+            <th scope="col">Flash Sale</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
 
-<div class="container text-center">
-    <div class="row" style="margin: 8px; background-color: rgb(219, 218, 218);" id="column">
-
+    <tbody>
         {% for item in items %}
 
-        <div class="col" style="background-color: white;">
-        
-            <img src="{{ item.product_picture }}" alt="" style="height: 202px; width: 180px; border-radius: 10px;">
+        <tr>
+            <th scope="row">{{ item.id }}</th>
+            <td>{{ item.date_added }}</td>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.previous_price }}</td>
+            <td>{{ item.current_price }}</td>
+            <td>{{ item.in_stock }}</td>
+            <td><img src="{{ item.product_picture }}" alt="" style="height: 50px; width: 50px; border-radius: 2px;"></td>
+            <td>{{ item.flash_sale }}</td>
 
-            <div class="row" style="margin-top: 5px;">
-                <h6 style="color: rgb(174, 147, 255);">{{ item.product_name }}</h6>
-            </div>
 
-            <div class="row" style="margin-top: 10px;">
-            
-                <div class="col">
+            <td>
+                <a href="/update-item/{{ item.id }}">Update</a>
+                <br>
+                <a href="/delete-item/{{ item.id }}">Delete</a>
+            </td>
 
-                    <h5 style="font-weight: 600; font-family: 'Times New Roman', Times, serif;">Ksh {{ item.current_price }}</h5>
-                    <strike><p style="color: rgb(174, 147, 255);">Ksh {{ item.previous_price}}</p></strike>
-                </div>
+        </tr>
 
-                <div class="col">
-                    <a href="/add-to-cart/{{ item.id }}">Add</a>
-                </div>
-            
-            </div>
 
-            <div class="row">
-                <p>{{ item.in_stock }} Items Left</p>
-            </div>
-        </div>
-    
         {% endfor %}
+    </tbody>
+</table>
 
-    </div>
-</div>
 
 {% endif %}
+
 
 {% endblock %}
