@@ -2,6 +2,7 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+import os
 
 
 db = SQLAlchemy()
@@ -12,11 +13,18 @@ def create_database():
     db.create_all()
     print('Database Created')
 
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.',1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hbnwdvbn ajnbsjn ahe'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    
+    app.config['UPLOAD_FOLDER'] = os.path.join('website', 'static', 'uploads')
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB max upload size
+    app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
     db.init_app(app)
 

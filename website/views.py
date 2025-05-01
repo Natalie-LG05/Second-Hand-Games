@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, flash, redirect, request, jsonify
+from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app
 from .models import Product, Cart, Order
 from flask_login import login_required, current_user
 from . import db
 from intasend import APIService
+import os
+from werkzeug.utils import secure_filename
 
 
 views = Blueprint('views', __name__)
@@ -11,6 +13,9 @@ API_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'
 
 API_TOKEN = 'YOUR_API_TOKEN'
 
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.',1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
 @views.route('/')
 def home():
@@ -20,6 +25,52 @@ def home():
     return render_template('home.html', items=items, cart=Cart.query.filter_by(customer_link=current_user.id).all()
                            if current_user.is_authenticated else [])
 
+@views.route('/add-item',methods=['GET','POST'])
+@login_required
+def add_item():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price = request.form.get('price')
+        description = request.form.get('description')
+        image_file = request.files.get('image')
+
+        if not name or not price or not image_file:
+            flash('Name, price, and image are required.',category='error')
+            return render_template('add_shop_items.html', user=current_user)
+        
+        if image_file and allowed_file(image_file.filename):
+            filename = secure_filename(image_file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            image_file.save(filepath)
+
+            try:
+                price = float(price)
+                previous_price_input = request.form.get('previous_price')
+                previous_price = float(previous_price_input) if previous_price_input else None
+                new_item = Product(
+                    product_name=name,
+                    current_price=price,
+                    description=description,
+                    image=filename, # saves the name not the path,
+                    user_id=current_user.id,
+                    previous_price=previous_price
+                )
+                db.session.add(new_item)
+                db.session.commit()
+                flash('Item aded successfully!', category='success')
+                return redirect(url_for('views.shop'))
+            except ValueError:
+                flash('Invalid price format', category='error')
+
+        else:
+            flash('Invalid image format', category='error')
+
+    return render_template('add_shop_items.html', user=current_user)
+
+@app.route('/shop')
+def shop():
+    return render_template('shop.html')
 
 @views.route('/add-to-cart/<int:item_id>')
 @login_required

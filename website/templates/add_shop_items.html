@@ -1,41 +1,38 @@
 
 {% extends 'base.html' %}
+{% block content %}
 
-{% block title %} Add Shop Items {% endblock %}
+<div class="container mt-5">
+    <h2>Add Shop Items</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
 
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
 
-{% block body %}
+        <div class="mb-3">
+            <label for="price" class="form-label">Price ($)</label>
+            <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="previous_price">Previous Price:</label>
+            <input type="number" step="0.01" name="previous_price" id="previous_price">
+            <br>
+        </div>
 
-<table class="table table-dark table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Product Name</th>
-            <th scope="col">Previous Price</th>
-            <th scope="col">Current Price</th>
-            <th scope="col">In Stock</th>
-            <th scope="col">Picture</th>
-            <th scope="col">Flash Sale</th>
-            <th scope="col">Add</th>
+        <div class="mb-3">
+            <label for="image" class="form-label">Upload Product Image</label>
+            <input class="form-control" type="file" id="image" name="image" id="image" accept="image/*" required>
+        </div>
 
-        </tr>
-    </thead>
-
-    <tbody>
-        <tr>
-            <form action="" method="POST", enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-
-                <td>{{ form.product_name }}</td>
-                <td>{{ form.previous_price }}</td>
-                <td>{{ form.current_price }}</td>
-                <td>{{ form.in_stock }}</td>
-                <td>{{ form.product_picture() }}</td>
-                <td>{{ form.flash_sale }}</td>
-                <td>{{ form.add_product() }}</td>
-            </form>
-        </tr>
-    </tbody>
-</table>
-
+        <button type="submit" class="btn btn-primary">Add item</button>
+    </form>
+</div>
 
 {% endblock %}

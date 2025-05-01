@@ -37,7 +37,7 @@ def sign_up():
             form.password1.data = ''
             form.password2.data = ''
 
-    return render_template('signup.html', form=form)
+    return render_template('sign_up.html', form=form)
 
 
 @auth.route('/login', methods=['GET', 'POST'])

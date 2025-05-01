@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="author" content="" />
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" ></script>
@@ -28,6 +30,8 @@
         <a class="navbar-brand" href="#" style="color: orange; font-size: 30px; margin-right: -2px;">
           <i class="fa-brands fa-Second Hand Games"></i>
         </a>
+          </li>
+        </ul>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -35,6 +39,13 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/" style="font-family: cursive; font-size: 19px;">Second Hand Games</a>
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item"
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link text-grey" href="{{ url_for('views.add_item') }}" style="font-size: 17px;">Add Shop Item</a>
             </li>
 
             <li class="nav-item">
@@ -107,6 +118,9 @@
       </div>
     </nav>
 
+    <div class="container mt-4">
+      {% block content%}{% endblock %}
+    </div>
 
     {% for message in get_flashed_messages() %}
 
@@ -138,13 +152,6 @@
 
 
 </body>
-    
-
-
-
-
-
-
     
     
 </body>
