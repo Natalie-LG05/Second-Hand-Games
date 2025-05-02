@@ -71,7 +71,7 @@ def add_item():
 @views.route('/shop')
 def shop():
     products = Product.query.all()
-    return render_template('shop.html', products=products)
+    return render_template('product_details.html', products=products)
 
 @views.route('/product/<int:product_id>')
 def product_details(product_id):
