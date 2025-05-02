@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, flash, redirect
 from .forms import LoginForm, SignUpForm, PasswordChangeForm
 from .models import User
 from . import db
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 auth = Blueprint('auth', __name__)
@@ -71,18 +71,18 @@ def log_out():
     return redirect('/')
 
 
-@auth.route('/profile/<int:customer_id>')
+@auth.route('/profile')
 @login_required
-def profile(customer_id):
-    customer = User.query.get(customer_id)
+def profile():
+    customer = User.query.get(current_user.id)
     return render_template('profile.html', customer=customer)
 
 
-@auth.route('/change-password/<int:customer_id>', methods=['GET', 'POST'])
+@auth.route('/change-password', methods=['GET', 'POST'])
 @login_required
-def change_password(customer_id):
+def change_password():
     form = PasswordChangeForm()
-    customer = User.query.get(customer_id)
+    customer = User.query.get(current_user.id)
     if form.validate_on_submit():
         current_password = form.current_password.data
         new_password = form.new_password.data
@@ -93,11 +93,12 @@ def change_password(customer_id):
                 customer.password = confirm_new_password
                 db.session.commit()
                 flash('Password Updated Successfully')
-                return redirect(f'/profile/{customer.id}')
+                return redirect(f'/profile')
             else:
                 flash('New Passwords do not match!!')
 
         else:
             flash('Current Password is Incorrect')
 
+    # Remain on the change password screen if there is an error (such as the passwords not matching)
     return render_template('change_password.html', form=form)
