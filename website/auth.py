@@ -10,6 +10,8 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    print('debug')
+
     form = SignUpForm()
     if form.validate_on_submit():
         email = form.email.data
