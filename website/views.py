@@ -22,7 +22,7 @@ def home():
 
     items = Product.query.filter_by(flash_sale=True)
 
-    return render_template('home.html', items=items, cart=Cart.query.filter_by(customer_link=current_user.id).all()
+    return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
 
 @views.route('/add-item',methods=['GET','POST'])
@@ -68,51 +68,43 @@ def add_item():
 
     return render_template('add_shop_items.html', user=current_user)
 
-@app.route('/shop')
+@views.route('/shop')
 def shop():
-    return render_template('shop.html')
+    products = Product.query.all()
+    return render_template('shop.html', products=products)
 
-@views.route('/add-to-cart/<int:item_id>')
+@views.route('/product/<int:product_id>')
+def product_details(product_id):
+    product = Product.query.get_or_404(product_id)
+    return render_template('shop_items.html', product=product)
+
+@views.route('/add-to-cart/<int:item_id>', methods=['POST'])
 @login_required
 def add_to_cart(item_id):
-    item_to_add = Product.query.get(item_id)
-    item_exists = Cart.query.filter_by(product_link=item_id, customer_link=current_user.id).first()
-    if item_exists:
-        try:
-            item_exists.quantity = item_exists.quantity + 1
-            db.session.commit()
-            flash(f' Quantity of { item_exists.product.product_name } has been updated')
-            return redirect(request.referrer)
-        except Exception as e:
-            print('Quantity not Updated', e)
-            flash(f'Quantity of { item_exists.product.product_name } not updated')
-            return redirect(request.referrer)
+    product = Product.query.get(item_id)
+    if product:
+        cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=product.id).first()
+        if cart_item:
+            cart_item.quantity +=1
+        else:
+            cart_item = Cart(user_id=current_user.id, product_id=product.id, quantity=1)
+            db.session.add(cart_item)
 
-    new_cart_item = Cart()
-    new_cart_item.quantity = 1
-    new_cart_item.product_link = item_to_add.id
-    new_cart_item.customer_link = current_user.id
-
-    try:
-        db.session.add(new_cart_item)
         db.session.commit()
-        flash(f'{new_cart_item.product.product_name} added to cart')
-    except Exception as e:
-        print('Item not added to cart', e)
-        flash(f'{new_cart_item.product.product_name} has not been added to cart')
+        print(f"added to cart: {product.product_name}")
+        
+    return redirect(url_for('views.show_cart'))
 
-    return redirect(request.referrer)
-
+@views.route('/debug_cart')
+def debug_cart():
+    cart_items = Cart.query.all()
+    return "<br>".join([f"User: {item.user_id}, Product: {item.product_id}, Quantity: {item.quantity}" for item in cart_items])
 
 @views.route('/cart')
 @login_required
 def show_cart():
-    cart = Cart.query.filter_by(customer_link=current_user.id).all()
-    amount = 0
-    for item in cart:
-        amount += item.product.current_price * item.quantity
-
-    return render_template('cart.html', cart=cart, amount=amount, total=amount+200)
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    return render_template('cart.html', cart=cart_items)
 
 
 @views.route('/pluscart')
@@ -124,7 +116,7 @@ def plus_cart():
         cart_item.quantity = cart_item.quantity + 1
         db.session.commit()
 
-        cart = Cart.query.filter_by(customer_link=current_user.id).all()
+        cart = Cart.query.filter_by(user_id=current_user.id).all()
 
         amount = 0
 
@@ -149,7 +141,7 @@ def minus_cart():
         cart_item.quantity = cart_item.quantity - 1
         db.session.commit()
 
-        cart = Cart.query.filter_by(customer_link=current_user.id).all()
+        cart = Cart.query.filter_by(user_id=current_user.id).all()
 
         amount = 0
 
@@ -174,7 +166,7 @@ def remove_cart():
         db.session.delete(cart_item)
         db.session.commit()
 
-        cart = Cart.query.filter_by(customer_link=current_user.id).all()
+        cart = Cart.query.filter_by(user_id=current_user.id).all()
 
         amount = 0
 
@@ -193,7 +185,7 @@ def remove_cart():
 @views.route('/place-order')
 @login_required
 def place_order():
-    customer_cart = Cart.query.filter_by(customer_link=current_user.id)
+    customer_cart = Cart.query.filter_by(user_id=current_user.id)
     if customer_cart:
         try:
             total = 0
@@ -211,12 +203,12 @@ def place_order():
                 new_order.status = create_order_response['invoice']['state'].capitalize()
                 new_order.payment_id = create_order_response['id']
 
-                new_order.product_link = item.product_link
-                new_order.customer_link = item.customer_link
+                new_order.product_id = item.product_id
+                new_order.user_id = item.user_id
 
                 db.session.add(new_order)
 
-                product = Product.query.get(item.product_link)
+                product = Product.query.get(item.product_id)
 
                 product.in_stock -= item.quantity
 
@@ -239,7 +231,7 @@ def place_order():
 @views.route('/orders')
 @login_required
 def order():
-    orders = Order.query.filter_by(customer_link=current_user.id).all()
+    orders = Order.query.filter_by(user_id=current_user.id).all()
     return render_template('orders.html', orders=orders)
 
 
@@ -248,7 +240,7 @@ def search():
     if request.method == 'POST':
         search_query = request.form.get('search')
         items = Product.query.filter(Product.product_name.ilike(f'%{search_query}%')).all()
-        return render_template('search.html', items=items, cart=Cart.query.filter_by(customer_link=current_user.id).all()
+        return render_template('search.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
 
     return render_template('search.html')

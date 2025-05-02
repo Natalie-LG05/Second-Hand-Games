@@ -38,12 +38,12 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return Customer.query.get(int(id))
+        return User.query.get(int(id))
 
     from .views import views
     from .auth import auth
     from .admin import admin
-    from .models import Customer, Cart, Product, Order
+    from .models import User, Cart, Product, Order
 
     app.register_blueprint(views, url_prefix='/') # localhost:5000/about-us
     app.register_blueprint(auth, url_prefix='/') # localhost:5000/auth/change-password

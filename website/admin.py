@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, flash, send_from_directory, redire
 from flask_login import login_required, current_user
 from .forms import ShopItemsForm, OrderForm
 from werkzeug.utils import secure_filename
-from .models import Product, Order, Customer
+from .models import Product, Order, User
 from . import db
 
 
@@ -173,7 +173,7 @@ def update_order(order_id):
 @login_required
 def display_customers():
     if current_user.id == 1:
-        customers = Customer.query.all()
+        customers = User.query.all()
         return render_template('customers.html', customers=customers)
     return render_template('404.html')
 

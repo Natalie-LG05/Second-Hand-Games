@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect
 from .forms import LoginForm, SignUpForm, PasswordChangeForm
-from .models import Customer
+from .models import User
 from . import db
 from flask_login import login_user, login_required, logout_user
 
@@ -18,7 +18,7 @@ def sign_up():
         password2 = form.password2.data
 
         if password1 == password2:
-            new_customer = Customer()
+            new_customer = User()
             new_customer.email = email
             new_customer.username = username
             new_customer.password = password2
@@ -47,7 +47,7 @@ def login():
         email = form.email.data
         password = form.password.data
 
-        customer = Customer.query.filter_by(email=email).first()
+        customer = User.query.filter_by(email=email).first()
 
         if customer:
             if customer.verify_password(password=password):
@@ -72,7 +72,7 @@ def log_out():
 @auth.route('/profile/<int:customer_id>')
 @login_required
 def profile(customer_id):
-    customer = Customer.query.get(customer_id)
+    customer = User.query.get(customer_id)
     return render_template('profile.html', customer=customer)
 
 
@@ -80,7 +80,7 @@ def profile(customer_id):
 @login_required
 def change_password(customer_id):
     form = PasswordChangeForm()
-    customer = Customer.query.get(customer_id)
+    customer = User.query.get(customer_id)
     if form.validate_on_submit():
         current_password = form.current_password.data
         new_password = form.new_password.data
