@@ -1,6 +1,6 @@
-{% extend 'base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}{{ product.product_name }} - Product <Details>% endblock %</Details>
+{% block title %}{{ product.product_name }} - Product Details>{% endblock %}
 
 {% block body %}
 
@@ -14,7 +14,7 @@
             <p><strong>Price:</strong> Ksh {{product.current_price }}</p>
             <p><strong>Description:</strong> {{ product.description }}</p>
 
-            {% if product.in_stock % }
+            {% if product.in_stock %}
             <p><strong>Status:</strong>In Stock</p>
             <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
                 <button type="submit" class="btn btn-primary">Add to Cart</button>

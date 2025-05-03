@@ -71,12 +71,12 @@ def add_item():
 @views.route('/shop')
 def shop():
     products = Product.query.all()
-    return render_template('product_details.html', products=products)
+    return render_template('shop.html', products=products)
 
 @views.route('/product/<int:product_id>')
 def product_details(product_id):
     product = Product.query.get_or_404(product_id)
-    return render_template('shop_items.html', product=product)
+    return render_template('product_details.html', product=product)
 
 @views.route('/add-to-cart/<int:item_id>', methods=['POST'])
 @login_required
