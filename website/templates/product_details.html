@@ -1,26 +1,27 @@
-{% extend 'base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}{{ product.product_name }} - Product <Details>% endblock %</Details>
+{% block title %}{{ product.product_name }}{% endblock %}
 
 {% block body %}
-
 <div class="container-m5">
     <div class="row">
         <div class="col-sm-6">
             <img src="{{ url_for('static', filename='uploads/' + product.image)}}" alt="{{ product.product_name }}" class="img-fluid" />
         </div>
         <div class="col-sm-6">
-            <h2>{{ product.product_name }}></h2>
-            <p><strong>Price:</strong> Ksh {{product.current_price }}</p>
-            <p><strong>Description:</strong> {{ product.description }}</p>
+            <h2>{{ product.product_name }}</h2>
+            <h4 class="text-success">Ksh {{ product.current_price }}</h4>
+            {% if product.previous_price %}
+            <p class="text-muted"><del>Ksh {{ product.previous_price }}</del></p>
+            {% endif %}
+            <p>{{ product.description }}</p>
 
-            {% if product.in_stock % }
-            <p><strong>Status:</strong>In Stock</p>
-            <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
+            {% if current_user.is_authenticated %}
+            <form action="{{url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
                 <button type="submit" class="btn btn-primary">Add to Cart</button>
             </form>
             {% else %}
-            <p><strong>Status:</strong> Out of Stock</p>
+            <p class="text-warning">Login to add to cart</p>
             {% endif %}
         </div>
     </div>
