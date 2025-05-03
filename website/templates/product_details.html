@@ -1,5 +1,29 @@
+{% extend 'base.html' %}
+
 {% block title %}{{ product.product_name }} - Product <Details>% endblock %</Details>
 
 {% block body %}
 
-<div class=""
+<div class="container-m5">
+    <div class="row">
+        <div class="col-sm-6">
+            <img src="{{ url_for('static', filename='uploads/' + product.image)}}" alt="{{ product.product_name }}" class="img-fluid" />
+        </div>
+        <div class="col-sm-6">
+            <h2>{{ product.product_name }}></h2>
+            <p><strong>Price:</strong> Ksh {{product.current_price }}</p>
+            <p><strong>Description:</strong> {{ product.description }}</p>
+
+            {% if product.in_stock % }
+            <p><strong>Status:</strong>In Stock</p>
+            <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+            {% else %}
+            <p><strong>Status:</strong> Out of Stock</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
