@@ -17,11 +17,24 @@
             <p>{{ product.description }}</p>
 
             {% if current_user.is_authenticated %}
-            <form action="{{url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
-                <button type="submit" class="btn btn-primary">Add to Cart</button>
-            </form>
-            {% else %}
-            <p class="text-warning">Login to add to cart</p>
+                <form action="{{url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+                {% set is_in_wishlist = false %}
+                {% for item in current_user.wishlist %}
+                    {% if item.product_id == product.id %}
+                        {% set is_in_wishlist = true %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if not is_in_wishlist %}
+                    <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
+                        <button type="submit" class="btn btn-warning mt-2">Add to Wishlist</button>
+                    </form>
+
+                {% else %}
+                <p class="text-warning">Login to add to cart</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

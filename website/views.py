@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app
-from .models import Product, Cart, Order
+from .models import Product, Cart, Order, Wishlist
 from flask_login import login_required, current_user
 from . import db
 from intasend import APIService
@@ -58,7 +58,7 @@ def add_item():
                 )
                 db.session.add(new_item)
                 db.session.commit()
-                flash('Item aded successfully!', category='success')
+                flash('Item added successfully!', category='success')
                 return redirect(url_for('views.shop'))
             except ValueError:
                 flash('Invalid price format', category='error')
@@ -180,6 +180,44 @@ def remove_cart():
         }
 
         return jsonify(data)
+
+@views.route('/add-to-wishlist/<int:product_id>', methods=['POST'])
+@login_required
+def add_to_wishlist(product_id):
+    product = Product.query.get_or_404(product_id)
+
+    # checking whether product is in wishlist already or not
+    existing_wishlist_item = Wishlist.query.filter_by(user_id=current_user.id, product_id=product.id).first()
+
+    if not existing_wishlist_item:
+        new_wishlist_item = Wishlist(user_id=current_user.id, product_id=product.id)
+        db.session.add(new_wishlist_item)
+        db.session.commit()
+        flash('Product added to your wishlist!')
+    else:
+        flash('This product is already in your wishlist.', category='warning')
+
+    return redirect(url_for('views.product_details', product_id=product.id))
+
+@views.route('/wishlist')
+@login_required
+def wishlist():
+    wishlist_items = Wishlist.query.filter_by(user_id=current_user.id).all()
+    return render_template('wishlist.html', wishlist=wishlist_items)
+
+@views.route('/remove-from-wishlist/<int:item_id>', methods=['POST'])
+@ login_required
+def remove_from_wishlist(item_id):
+    wishlist_item = Wishlist.query.get_or_404(item_id)
+
+    if wishlist_item.user_id == current_user.id:
+        db.session.delete(wishlist_item)
+        db.session.commit()
+        flash('Product removed from your wishlist', category='success')
+    else:
+        flash('You are not authorized to remove this item', category='danger')
+
+    return redirect(url_for('views.wishlist'))
 
 
 @views.route('/place-order')

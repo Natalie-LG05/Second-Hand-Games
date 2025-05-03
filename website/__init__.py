@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import os
 
-
 db = SQLAlchemy()
 DB_NAME = 'database.sqlite3'
 

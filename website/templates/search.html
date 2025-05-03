@@ -26,6 +26,9 @@
                                 <form method="POST" action="{{ url_for('views.add_to_cart', item_id=product.id) }}">
                                     <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
                                 </form>
+                                <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
+                                    <button type="submit" class="btn btn-warning btn-sm">Add to Wishlist</button>
+                                </form>
                             {% endif %}
                         </div>
                     </div>

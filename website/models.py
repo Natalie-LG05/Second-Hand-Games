@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     cart_items = db.relationship('Cart', backref='user', lazy=True)
     orders = db.relationship('Order', backref=db.backref('user', lazy=True))
     products = db.relationship('Product', backref='user', lazy=True)
+    wishlist = db.relationship('Wishlist', backref='wishlist_user', lazy=True)
 
     @property
     def password(self):
@@ -76,3 +77,14 @@ class Order(db.Model):
 
     def __str__(self):
         return '<Order %r>' % self.id
+    
+class Wishlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('wishlists', lazy=True))
+    product = db.relationship('Product', backref=db.backref('wishlist_items', lazy=True))
+
+    def __repr__(self):
+        return f'<Wishlist {self.id}>'
