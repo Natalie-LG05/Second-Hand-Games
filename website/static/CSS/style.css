@@ -57,4 +57,13 @@
     border-radius: 50%; /*makes it a circle */
     object-fit: cover; /*keeps ratio and still fills the square */
     display: block;
+    border: 1px solid black;
+}
+
+.profile-page-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /*makes it a circle */
+    object-fit: cover; /*keeps ratio and still fills the square */
+    border: 2px solid black;
 }
