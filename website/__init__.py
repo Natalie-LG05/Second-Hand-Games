@@ -2,8 +2,10 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_mail import Mail
 import os
 
+mail = Mail()
 db = SQLAlchemy()
 DB_NAME = 'database.sqlite3'
 
@@ -18,8 +20,19 @@ def allowed_file(filename):
 
 def create_app():
     app = Flask(__name__)
+
     app.config['SECRET_KEY'] = 'hbnwdvbn ajnbsjn ahe'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_USERNAME'] = 'secondhandgames3@gmail.com'
+    app.config['MAIL_PASSWORD'] = 'iybk acuz oibx mzre'
+    app.config['MAIL_DEFAULT_SENDER'] = 'secondhandgames3@gmail.com'
+
+    mail.init_app(app)
     
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB max upload size

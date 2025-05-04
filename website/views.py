@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
+from flask import current_app as app
 from .models import Product, Cart, Order, Wishlist
 from flask_login import login_required, current_user
 from . import db
@@ -9,6 +10,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from PIL import Image, ImageOps
 from flask_mail import Message, Mail
+from . import mail
 ##############################################################################################################################################
 
 views = Blueprint('views', __name__)
@@ -17,7 +19,6 @@ API_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'
 
 API_TOKEN = 'YOUR_API_TOKEN'
 
-mail = Mail(app)
 ##############################################################################################################################################
 def allowed_file(filename):
     return '.' in filename and \
@@ -36,11 +37,10 @@ def contact():
     if request.method =='POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        message = request.form.get('message')
+        message_body = request.form.get('message')
         
         # creates a message object
-        msg = Message(f"Contact Us Message from {name}", sender = email, recipients=["kylie.t.school@gmail.com"])
-        msg.body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+        msg = Message(f"Contact Us Message from {name}", sender = email, recipients=["secondhandgames3@gmail.com"], body=f"From: {name} <{email}\n\n{message_body}")
 
         try:
             #sends email

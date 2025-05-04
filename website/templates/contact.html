@@ -21,11 +21,9 @@
     </form>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="alert alert-success mt-3">
-                {% for category, message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
+            {% for category, message in messages %}
+                <div class="alert alert-{{ catergory }}">{{ message }}</div>
+            {% endfor %}
         {% endif %}
     {% endwith %}
 </div>
