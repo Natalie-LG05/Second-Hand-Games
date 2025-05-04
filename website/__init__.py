@@ -21,7 +21,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'hbnwdvbn ajnbsjn ahe'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     
-    app.config['UPLOAD_FOLDER'] = os.path.join('website', 'static', 'uploads')
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB max upload size
     app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 

@@ -44,3 +44,17 @@
     color: orange;
     transition: 200ms;
 }
+
+.navbar-profile-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /*makes it a circle */
+    object-fit: cover; /*keeps ratio and still fills the square */
+    display: block;
+}

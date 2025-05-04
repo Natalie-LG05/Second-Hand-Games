@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app
+from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
 from .models import Product, Cart, Order, Wishlist
 from flask_login import login_required, current_user
 from . import db
 from intasend import APIService
 import os
+import uuid
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
+from PIL import Image, ImageOps
 
 
 views = Blueprint('views', __name__)
@@ -24,6 +27,66 @@ def home():
 
     return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
+
+@views.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    phone_number = request.form.get('phone_number')
+
+    current_user.username = username
+    current_user.email = email
+    current_user.phone_number = phone_number
+
+    try:
+        db.session.commit()
+        flash('Profile updated successuflly!', category='success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error updating profile: {e}", category='error')
+    
+    return redirect(url_for('views.profile'))
+
+@views.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+
+    if not current_user._password:
+        flash("you dont' have a password set yet. Please contact support.", category='error')
+        return redirect(url_for('views.profile'))
+    # verifies password hash
+    if current_user.verify_password(current_password):
+        if new_password:
+            current_user.password = new_password
+            try:
+                db.session.commit()
+                flash(f'Password updated successfully!', category='success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error updating password: {e}', category='error')
+        else:
+            flash("New password can't be empty", category='error')
+    else:
+        flash('Current password is incorrect.', category='error')
+    
+    return redirect(url_for('views.profile'))
+
+@views.route('/view_product/<int:product_id>')
+def view_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    #adding product to session's recently viewed list with a max of 5 products showing
+    recently_viewed = session.get('recently_viewed', [])
+
+    if product_id not in recently_viewed:
+        if len(recently_viewed) >= 5:
+            recently_viewed.pop(0) # removes oldest if more than 5
+        recently_viewed.append(product_id)
+        session['recently_viewed'] = recently_viewed
+
+    return render_template('product_details.html', product=product)
 
 @views.route('/add-item',methods=['GET','POST'])
 @login_required
@@ -67,6 +130,38 @@ def add_item():
             flash('Invalid image format', category='error')
 
     return render_template('add_shop_items.html', user=current_user)
+
+@views.route('/profile', methods=['GET','POST'])
+@login_required
+def profile():
+    orders = Order.query.filter_by(user_id=current_user.id).all()
+    #fetches recently viewed form session
+    recently_viewed_ids = session.get('recently_viewed', [])
+    recently_viewed = Product.query.filter(Product.id.in_(recently_viewed_ids)).all()
+
+    if request.method == 'POST':
+        image = request.files.get('profile_picture')
+        if image and image.filename != '' and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+            os.makedirs(upload_folder, exist_ok=True)
+            filepath = os.path.join(upload_folder, unique_filename)
+            image.save(filepath)
+            image = Image.open(filepath)
+            image = ImageOps.fit(image, (400,400), method=Image.Resampling.LANCZOS) # resizes uploaded pic while not distorting it
+            image.save(filepath) # overwrite original file with resized image
+
+            current_user.profile_picture = unique_filename # updates profile pic
+            db.session.commit()
+
+            flash('Profile picture updated!', 'success')
+        else:
+            flash('No image file selected or image format is invalid.', 'error')
+        
+        return redirect(url_for('views.profile'))
+    
+    return render_template('profile.html', user=current_user, orders=orders, recently_viewed=recently_viewed)
 
 @views.route('/shop')
 def shop():
