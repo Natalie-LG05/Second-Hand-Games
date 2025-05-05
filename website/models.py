@@ -8,26 +8,29 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     username = db.Column(db.String(100))
-    password_hash = db.Column(db.String(150))
+    _password = db.Column(db.String(150), nullable=True)
+    phone_number = db.Column(db.String(15), nullable=True)
     date_joined = db.Column(db.DateTime(), default=datetime.utcnow)
 
     cart_items = db.relationship('Cart', backref='user', lazy=True)
     orders = db.relationship('Order', backref=db.backref('user', lazy=True))
     products = db.relationship('Product', backref='user', lazy=True)
+    wishlist = db.relationship('Wishlist', backref='wishlist_user', lazy=True)
+    profile_picture = db.Column(db.String(150), default='default.jpeg')
 
     @property
     def password(self):
-        raise AttributeError('Password is not a readable Attribute')
+        raise AttributeError('Password is not a readable attribute')
 
     @password.setter
     def password(self, password):
-        self.password_hash = generate_password_hash(password=password)
+        self._password = generate_password_hash(password)
 
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password=password)
+        return check_password_hash(self._password, password)
 
     def __str__(self):
-        return '<User %r>' % User.id
+        return '<User %r>' % self.username
 
 
 class Product(db.Model):
@@ -76,3 +79,14 @@ class Order(db.Model):
 
     def __str__(self):
         return '<Order %r>' % self.id
+    
+class Wishlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('wishlists', lazy=True))
+    product = db.relationship('Product', backref=db.backref('wishlist_items', lazy=True))
+
+    def __repr__(self):
+        return f'<Wishlist {self.id}>'
