@@ -51,7 +51,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-grey" href="{{ url_for('views.contact') }}" style="font-size: 17px;">Contact us</a>
+              <a class="nav-link text-grey" href="#" style="font-size: 17px;">Contact us</a>
             </li>
           </ul>
 
@@ -92,6 +92,10 @@
               </a>
             {% else %}
               <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-grey" href="#" role="button" id="profileDropdown"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  Account
+                </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
                   <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">Login</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('auth.sign_up') }}">Sign Up</a></li>

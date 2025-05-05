@@ -4,9 +4,7 @@
     <div class="shop-container">
         <h1>Welcome to Our Shop</h1>
 
-        <div class="product-filter">
-            <input type="text" placeholder="Search for products" id="search-input" onkeyup="filterProducts()">
-        </div>
+        
 
         <div class="product-list">
             {% for product in products %}
@@ -22,6 +20,10 @@
 
                         <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
                             <button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
+                        </form>
+                        <form action="{{ url_for('views.buy_now', product_id=product.id) }}" method="POST">
+                            <input type="number" name="quantity" min="1" value="1" style="width: 60px;">
+                            <button type="submit" class="btn btn-primary">Buy Now</button>
                         </form>
                     </div>
                 </div>

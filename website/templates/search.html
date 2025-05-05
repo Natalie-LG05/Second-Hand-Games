@@ -5,6 +5,18 @@
 
 {% block body %}
 <div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mb-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     <h2 class="text-white mb-4">Search Results</h2>
 
     {% if items %}
@@ -23,12 +35,17 @@
                         <div class="mt-auto d-flex justify-content-between">
                             <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-primary btn-sm">View</a>
                             {% if current_user.is_authenticated %}
-                                <form method="POST" action="{{ url_for('views.add_to_cart', item_id=product.id) }}">
-                                    <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
-                                </form>
-                                <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
-                                    <button type="submit" class="btn btn-warning btn-sm">Add to Wishlist</button>
-                                </form>
+                                <div class="d-flex flex-column gap-1">
+                                    <form method="POST" action="{{ url_for('views.add_to_cart', item_id=product.id) }}">
+                                        <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
+                                        <button type="submit" class="btn btn-warning btn-sm w-100">Add to Wishlist</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('views.buy_now',product_id=product.id) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm w-100">Buy Now</button>
+                                    </form>
+                                </div>
                             {% endif %}
                         </div>
                     </div>

@@ -2,6 +2,7 @@ from . import db
 from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -69,16 +70,30 @@ class Order(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(100), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(100), nullable=False, default="Pending")
     payment_id = db.Column(db.String(1000), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    items = db.relationship('OrderItem',backref='order',lazy=True)
 
     # customer
 
     def __str__(self):
         return '<Order %r>' % self.id
+    
+class OrderItem(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    order_id = db.Column(db.Integer,db.ForeignKey('order.id'),nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'),nullable=False)
+    quantity = db.Column(db.Integer,nullable=False)
+    price = db.Column(db.Float,nullable=False)
+
+    product = db.relationship('Product')
+
+    def __str__(self):
+        return f'<OrderItem {self.id} - Order {self.order_id}>'
     
 class Wishlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
