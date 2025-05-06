@@ -1,24 +1,27 @@
 from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
 from flask import current_app as app
+<<<<<<< HEAD
 from .models import Product, Cart, Order, Wishlist, OrderItem
+=======
+from .models import Product, Cart, Order, Wishlist,OrderItem, db
+>>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
 from flask_login import login_required, current_user
 from . import db
 from intasend import APIService
-import os
-import uuid
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from PIL import Image, ImageOps
 from flask_mail import Message, Mail
 from . import mail
+from datetime import datetime
+import os
+import uuid
 ##############################################################################################################################################
 
 views = Blueprint('views', __name__)
 
 API_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'
-
 API_TOKEN = 'YOUR_API_TOKEN'
-
 ##############################################################################################################################################
 def allowed_file(filename):
     return '.' in filename and \
@@ -31,6 +34,93 @@ def home():
 
     return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
+##############################################################################################################################################
+@views.route('/buy-now/<int:product_id>', methods=['POST'])
+@login_required
+def buy_now(product_id):
+    product = Product.query.get_or_404(product_id)
+    quantity = int(request.form.get('quantity',1))
+
+    if product.in_stock < quantity:
+        flash("Sorry, not enough stock available.",category='error')
+        return redirect(url_for('views.shop'))
+    try:
+        total_price = product.current_price * quantity
+
+        service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
+        create_order_response = service.collect.mpesa_stk_push(
+            phone_number=current_user.phone_number, 
+            email=current_user.email,
+            amount=total_price + 200, # delivery/handling fee
+            narrative="Instant Purchase"
+        )
+
+        if 'invoice' not in create_order_response or 'id' not in create_order_response:
+            raise Exception("Invalid response from payment service")
+        #create order
+        new_order = Order(
+            user_id=current_user.id,
+            timestamp=datetime.utcnow(),
+            status=create_order_response['invoice']['state'].capitalize(),
+            payment_id=create_order_response['id']
+        )
+        db.session.add(new_order)
+        db.session.flush() # get new_order.id
+
+        order_item = OrderItem(
+            order_id=new_order.id,
+            product_id=product.id,
+            quantity=quantity,
+            price=product.current_price
+        )
+        db.session.add(order_item)
+
+        #updates stock of item
+        product.in_stock -= quantity
+        db.session.commit()
+
+        flash("Order place successfully!", category='success')
+        return redirect(url_for('views.orders'))
+    
+    except Exception as e:
+        print(e)
+        flash("Order could not be placed.",category='error')
+        return redirect(url_for('views.shop'))
+##############################################################################################################################################
+@views.route('/checkout',methods=['GET'])
+@login_required
+def checkout():
+    cart = Cart.query.filter_by(user_id=current_user.id).first()
+    if not cart or not cart.items:
+        flash("Your cart is empty.",category='error')
+        return redirect(url_for('views.cart'))
+    
+    new_order = Order(user_id=current_user.id, timestamp=datetime.utcnow())
+    db.session.add(new_order)
+    db.session.flush() # get order ID
+
+    #moves from cart to order
+    for item in cart.items:
+        order_item = OrderItem(
+            order_id=new_order.id,
+            product_id=item.product_id,
+            quantity=item.quantity,
+            price=item.product.price
+        )
+        db.session.add(order_item)
+
+    #clears cart
+    db.session.delete(cart)
+
+    db.session.commit()
+    flash("Order placed successfully!", category='success')
+    return redirect(url_for('views.order')) # brings to order history
+##############################################################################################################################################
+@views.route('/orders')
+@login_required
+def orders():
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.timestamp.desc()).all()
+    return render_template('orders.html',orders=orders)
 ##############################################################################################################################################
 @views.route('/contact', methods=['GET','POST'])
 def contact():
@@ -364,6 +454,7 @@ def remove_from_wishlist(item_id):
 @views.route('/place-order')
 @login_required
 def place_order():
+<<<<<<< HEAD
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     if not cart_items:
         flash("Cart is empty.", category="error")
@@ -405,6 +496,65 @@ def place_order():
 def order():
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.timestamp.desc()).all()
     return render_template('orders.html', orders=orders)
+=======
+    phone_number = request.form.get('phone_number') or current_user.phone_number
+
+    if not phone_number:
+        flash("A phone number is required to place an order.",category='error')
+        return redirect(url_for('views.cart'))
+
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    if not cart_items:
+        flash('Your cart is empty.', category='error')
+        return redirect(url_for('views.cart'))
+
+    try:
+        total = sum(item.product.current_price * item.quantity for item in cart_items)
+
+        service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
+        response = service.collect.mpesa_stk_push(
+            phone_number=current_user.phone_number, 
+            email=current_user.email,
+            amount=total + 200, 
+            narrative='Purchase of goods')
+        new_order = Order(
+            user_id=current_user.id,
+            timestamp=datetime.utcnow(),
+            status=response['invoice']['state'].capitalize(),
+            payment_id=response['id']
+        )
+        db.session.add(new_order)
+        db.session.flush() #can use new_order.id for OrderItems
+
+        for item in cart_items:
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.product.current_price
+            )
+            db.session.add(order_item)
+
+            #decrease product stock
+            product = Product.query.get(item.product_id)
+            product.in_stock -= item.quantity
+
+            #delete cart item
+            db.session.delete(item)
+
+        db.session.commit()
+
+        flash('Order placed successfully!',category='success')
+        return redirect(url_for('views.orders'))
+    
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        flash('An error occurred while placing your order.',category='error')
+        return redirect(url_for('views.cart'))
+
+        
+>>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
 ##############################################################################################################################################
 @views.route('/search', methods=['GET', 'POST'])
 def search():

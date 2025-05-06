@@ -2,6 +2,7 @@ from . import db
 from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -66,10 +67,23 @@ class Cart(db.Model):
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+<<<<<<< HEAD
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     order_items = db.relationship('OrderItem', backref='order', lazy=True)
     total_price = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+=======
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(100), nullable=False, default="Pending")
+    payment_id = db.Column(db.String(1000), nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    items = db.relationship('OrderItem',backref='order',lazy=True)
+>>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
 
     order_items = db.relationship('OrderItem', backref='order', lazy=True)
     # customer
@@ -78,6 +92,7 @@ class Order(db.Model):
         return '<Order %r>' % self.id
     
 class OrderItem(db.Model):
+<<<<<<< HEAD
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
@@ -85,6 +100,18 @@ class OrderItem(db.Model):
     price = db.Column(db.Float, nullable=False)
 
     product = db.relationship('Product', backref='order_items')
+=======
+    id = db.Column(db.Integer,primary_key=True)
+    order_id = db.Column(db.Integer,db.ForeignKey('order.id'),nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'),nullable=False)
+    quantity = db.Column(db.Integer,nullable=False)
+    price = db.Column(db.Float,nullable=False)
+
+    product = db.relationship('Product')
+
+    def __str__(self):
+        return f'<OrderItem {self.id} - Order {self.order_id}>'
+>>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
     
 class Wishlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -15,7 +15,13 @@
             <p class="text-muted"><del>Ksh {{ product.previous_price }}</del></p>
             {% endif %}
             <p>{{ product.description }}</p>
-
+            <form action="{{ url_for('views.buy_now', product_id=product.id) }}" method="POST">
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.in_stock }}" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Buy Now</button>
+            </form>
             {% if current_user.is_authenticated %}
                 <form action="{{url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
                     <button type="submit" class="btn btn-primary">Add to Cart</button>

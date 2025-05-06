@@ -47,7 +47,15 @@
             </li>
 
             <li class="nav-item">
+<<<<<<< HEAD
               <a class="nav-link text-grey" href="{{ url_for('views.contact') }}" style="font-size: 17px;">Contact us</a>
+=======
+              <a class="nav-link text-grey" href="#" style="font-size: 17px;">About Us</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link text-grey" href="#" style="font-size: 17px;">Contact us</a>
+>>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
             </li>
           </ul>
 
@@ -79,8 +87,33 @@
 
           
           <li class="nav-item dropdown mx-2">
+<<<<<<< HEAD
             <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" role="button"
               id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+=======
+            {% if current_user.is_authenticated %}
+              <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" rolebutton" id="profileDropdown"
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
+                     alt="Profile Picture" class="navbar-profile-pic" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"> 
+                {{ current_user.username }}
+              </a>
+            {% else %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-grey" href="#" role="button" id="profileDropdown"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  Account
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                  <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">Login</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('auth.sign_up') }}">Sign Up</a></li>
+                </ul>
+              </li>
+            {% endif %}
+            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+
+            
+>>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
               {% if current_user.is_authenticated %}
                 {% if current_user.profile_picture %}
                   <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
