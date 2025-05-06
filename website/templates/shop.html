@@ -4,11 +4,6 @@
     <div class="shop-container">
         <h1>Welcome to Our Shop</h1>
 
-<<<<<<< HEAD
-=======
-        
-
->>>>>>> 7ecab79ff318453b88a20c20e65f457ec5bdac92
         <div class="product-list">
             {% for product in products %}
                 <div class="product-item" id="product-{{ product.id }}">
@@ -23,10 +18,6 @@
 
                         <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
                             <button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
-                        </form>
-                        <form action="{{ url_for('views.buy_now', product_id=product.id) }}" method="POST">
-                            <input type="number" name="quantity" min="1" value="1" style="width: 60px;">
-                            <button type="submit" class="btn btn-primary">Buy Now</button>
                         </form>
                     </div>
                 </div>
