@@ -4,10 +4,6 @@
     <div class="shop-container">
         <h1>Welcome to Our Shop</h1>
 
-        <div class="product-filter">
-            <input type="text" placeholder="Search for products" id="search-input" onkeyup="filterProducts()">
-        </div>
-
         <div class="product-list">
             {% for product in products %}
                 <div class="product-item" id="product-{{ product.id }}">

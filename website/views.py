@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
 from flask import current_app as app
-from .models import Product, Cart, Order, Wishlist
+from .models import Product, Cart, Order, Wishlist, OrderItem
 from flask_login import login_required, current_user
 from . import db
 from intasend import APIService
@@ -114,6 +114,29 @@ def view_product(product_id):
         session['recently_viewed'] = recently_viewed
 
     return render_template('product_details.html', product=product)
+##############################################################################################################################################
+@views.route('/buy_now/<int:product_id>', methods=['POST'])
+@login_required
+def buy_now(product_id):
+    product = Product.query.get_or_404(product_id)
+    quantity = int(request.form.get('quantity',1))
+    total = product.current_price * quantity
+    # create order
+    new_order = Order(user_id=current_user.id, total_price=total)
+    db.session.add(new_order)
+    db.session.commit()
+    # add orderitem
+    order_item = OrderItem(
+        order_id=new_order.id,
+        product_id=product.id,
+        quantity=quantity,
+        price=product.current_price
+    )
+    db.session.add(order_item)
+    db.session.commit()
+
+    flash('Order placed successfully!', 'success')
+    return redirect(url_for('views.order'))
 ##############################################################################################################################################
 @views.route('/add-item',methods=['GET','POST'])
 @login_required
@@ -341,52 +364,46 @@ def remove_from_wishlist(item_id):
 @views.route('/place-order')
 @login_required
 def place_order():
-    customer_cart = Cart.query.filter_by(user_id=current_user.id)
-    if customer_cart:
-        try:
-            total = 0
-            for item in customer_cart:
-                total += item.product.current_price * item.quantity
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    if not cart_items:
+        flash("Cart is empty.", category="error")
+        return redirect(url_for('views.home'))
 
-            service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
-            create_order_response = service.collect.mpesa_stk_push(phone_number='YOUR_NUMBER ', email=current_user.email,
-                                                                   amount=total + 200, narrative='Purchase of goods')
 
-            for item in customer_cart:
-                new_order = Order()
-                new_order.quantity = item.quantity
-                new_order.price = item.product.current_price
-                new_order.status = create_order_response['invoice']['state'].capitalize()
-                new_order.payment_id = create_order_response['id']
+    total = 0
+    for item in cart_items:
+        if item.product.current_price is None:
+            flash(f"Product {item.product.product_name} does not have a price.", category="error")
+            return redirect(url_for('views.hom'))
+        total += item.product.current_price * item.quantity
 
-                new_order.product_id = item.product_id
-                new_order.user_id = item.user_id
+    new_order = Order(user_id=current_user.id, total_price=total)
+    db.session.add(new_order)
+    db.session.commit()
 
-                db.session.add(new_order)
+    for item in cart_items:
+        order_item = OrderItem(
+            order_id=new_order.id,
+            product_id=item.product_id,
+            quantity=item.quantity,
+            price=item.product.current_price
+        )
+        db.session.add(order_item)
 
-                product = Product.query.get(item.product_id)
+    # Remove each item individually
+    for item in cart_items:
+        db.session.delete(item)
 
-                product.in_stock -= item.quantity
+    db.session.commit()
 
-                db.session.delete(item)
+    flash("Order placed successfully!", category="success")
 
-                db.session.commit()
-
-            flash('Order Placed Successfully')
-
-            return redirect('/orders')
-        except Exception as e:
-            print(e)
-            flash('Order not placed')
-            return redirect('/')
-    else:
-        flash('Your cart is Empty')
-        return redirect('/')
+    return redirect(url_for('views.home'))
 ##############################################################################################################################################
 @views.route('/orders')
 @login_required
 def order():
-    orders = Order.query.filter_by(user_id=current_user.id).all()
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.timestamp.desc()).all()
     return render_template('orders.html', orders=orders)
 ##############################################################################################################################################
 @views.route('/search', methods=['GET', 'POST'])

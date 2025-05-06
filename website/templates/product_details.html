@@ -36,6 +36,14 @@
                 <p class="text-warning">Login to add to cart</p>
                 {% endif %}
             {% endif %}
+            <form action="{{ url_for('views.buy_now', product_id=product.id) }}" method="POST">
+                <div class="input-group mb-3" style="width: 120px;">
+                    <input type="number" name="quantity" value="1" min="1" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-warning">
+                    Buy Now
+                </button>
+            </form>
         </div>
     </div>
 </div>
