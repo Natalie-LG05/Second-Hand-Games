@@ -82,9 +82,13 @@
             <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" role="button"
               id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
               {% if current_user.is_authenticated %}
-                {% if current_user.profile_picture %}
+                {% if current_user.profile_picture and current_user.profile_picture != 'default.jpeg' %}
                   <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
                       alt="Profile Picture" class="navbar-profile-pic" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"> 
+                {% else %}
+                  <img src="{{ url_for('static', filename='images/default.jpeg') }}"
+                       alt="Profile Picture" class="navbar-profile-pic"
+                       style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;">
                 {% endif %}
                 {{ current_user.username }}
               {% else %}

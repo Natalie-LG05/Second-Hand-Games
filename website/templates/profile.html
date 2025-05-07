@@ -9,8 +9,13 @@
 
     <!-- profile pic -->
     <div class="mb-3">
-        <img src="{{ url_for('static', filename='uploads/' + (current_user.profile_picture or 'default.jpeg')) }}" 
-         alt="Profile Picture" class="rounded-circle profile-page-pic">
+        {% if current_user.profile_picture and current_user.profile_picture != 'default.jpeg' %}
+            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" 
+                 alt="Profile Picture" class="rounded-circle profile-page-pic">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/default.jpeg') }}" 
+             alt="Profile Picture" class="rounded-circle profile-page-pic">
+        {% endif %}
     </div>
 
     <!-- update profile pic -->
@@ -63,11 +68,14 @@
         <ul class="list-group text-dark">
             {% for order in orders %}
                 <li class="list-group-item">
-                    <strong>{{ order.product.product_name }}</strong> -
-                    Quantity: {{ order.quantity }},
-                    Price: %{{ order.price }},
-                    Status: {{ order.status }},
-                    Date: {{ order.date_added.strftime('%Y-%m-%d') }}
+                    <strong>Order #{{ order.id }}</strong> - Status: {{ order.status }}, Date: {{ order.timestamp.strftime('%Y-%m-%d') }}
+                    <ul>
+                        {% for item in order.order_items %}
+                            <li>
+                                {{ item.product.product_name }} - Quantity: {{ order.quantity }}, Price: %{{ order.price }}
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </li>
             {% endfor %}
         </ul>
