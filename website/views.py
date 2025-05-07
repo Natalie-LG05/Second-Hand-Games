@@ -147,7 +147,7 @@ def view_product(product_id):
 def buy_now(product_id):
     product = Product.query.get_or_404(product_id)
     quantity = int(request.form.get('quantity',1))
-    total = product.current_price * quantity
+    total = product.price * quantity
     # create order
     new_order = Order(user_id=current_user.id, total_price=total)
     db.session.add(new_order)
@@ -157,7 +157,7 @@ def buy_now(product_id):
         order_id=new_order.id,
         product_id=product.id,
         quantity=quantity,
-        price=product.current_price
+        price=product.price
     )
     db.session.add(order_item)
     db.session.commit()
@@ -200,7 +200,8 @@ def add_item():
         #   to ensure unique file names
         files = os.listdir(app.config['UPLOAD_FOLDER'])
         num_files = len(files)
-        filename = secure_filename(f'image_upload_{num_files+1}')
+
+        filename = secure_filename(f'image_upload_{num_files+1}.png')
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
@@ -441,47 +442,46 @@ def remove_from_wishlist(item_id):
 @views.route('/place-order')
 @login_required
 def place_order():
-    customer_cart = Cart.query.filter_by(user_id=current_user.id)
-    if customer_cart:
-        try:
-            total = 0
-            for item in customer_cart:
-                total += item.product.price * item.quantity
+    try:
+        # Fetch cart items from the database, not from the session
+        cart_items = Cart.query.filter_by(user_id=current_user.id).all()
 
-            service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
-            create_order_response = service.collect.mpesa_stk_push(phone_number='YOUR_NUMBER ', email=current_user.email,
-                                                                   amount=total + 200, narrative='Purchase of goods')
+        if not cart_items:
+            flash('Your cart is empty. Please add items to your cart before placing an order.', 'warning')
+            return redirect(url_for('views.show_cart'))
 
-            for item in customer_cart:
-                new_order = Order()
-                new_order.quantity = item.quantity
-                new_order.price = item.product.price
-                new_order.status = create_order_response['invoice']['state'].capitalize()
-                new_order.payment_id = create_order_response['id']
+        order = Order(user_id=current_user.id)
 
-                new_order.product_id = item.product_id
-                new_order.user_id = item.user_id
+        total_price = 0
+        for cart_item in cart_items:
+            product = Product.query.get(cart_item.product_id)
+            if product:  # Ensure product exists
+                order_item = OrderItem(
+                    product_id=product.id,
+                    quantity=cart_item.quantity,
+                    price=product.current_price
+                )
+                order.order_items.append(order_item)
+                total_price += product.current_price * cart_item.quantity
 
-                db.session.add(new_order)
+        # Set the total price for the order
+        order.total_price = total_price
+        db.session.add(order)
 
-                product = Product.query.get(item.product_id)
+        # Commit the transaction to the database
+        db.session.commit()
 
-                product.in_stock -= item.quantity
+        # Optionally clear the cart after placing the order
+        db.session.query(Cart).filter_by(user_id=current_user.id).delete()
+        db.session.commit()
 
-                db.session.delete(item)
+        flash('Your order has been placed successfully!', 'success')
+        return redirect(url_for('views.order'))  # Redirect to order confirmation page or orders page
 
-                db.session.commit()
-
-            flash('Order Placed Successfully')
-
-            return redirect('/orders')
-        except Exception as e:
-            print(e)
-            flash('Order not placed')
-            return redirect('/')
-    else:
-        flash('Your cart is Empty')
-        return redirect('/')
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of an error
+        flash(f"Error placing order: {str(e)}", 'danger')
+        return redirect(url_for('views.show_cart'))  # Redirect back to cart page if error occurs
 
 
 @views.route('/orders')
@@ -489,6 +489,13 @@ def place_order():
 def order():
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.timestamp.desc()).all()
     return render_template('orders.html', orders=orders)
+
+
+@views.route('/order_history')
+@login_required
+def order_history(): 
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.timestamp.desc()).all()
+    return render_template('order_history.html',orders=orders)         
 
 
 @views.route('/search', methods=['GET', 'POST'])

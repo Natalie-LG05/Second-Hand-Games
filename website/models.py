@@ -52,6 +52,10 @@ class Product(db.Model):
     def __str__(self):
         return '<Product %r>' % self.product_name
 
+    @property
+    def current_price(self):
+        return self.price
+    
 
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,15 +71,13 @@ class Cart(db.Model):
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quantity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(100), nullable=False)
-    payment_id = db.Column(db.String(1000), nullable=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    total_price = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(50), default='Pending')
+    payment_id = db.Column(db.String(100))
+    # Corrected relationship to order_items
+    order_items = db.relationship('OrderItem', backref='order', lazy=True)
     def __str__(self):
         return '<Order %r>' % self.id
     
