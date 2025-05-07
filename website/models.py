@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     cart_items = db.relationship('Cart', backref='user', lazy=True)
     orders = db.relationship('Order', backref=db.backref('user', lazy=True))
     products = db.relationship('Product', backref='user', lazy=True)
-    wishlist = db.relationship('Wishlist', backref='wishlist_user', lazy=True)
+    wishlist = db.relationship('Wishlist', back_populates='user')
     profile_picture = db.Column(db.String(150), default='default.jpeg')
 
     # Extra stuff that isn't being used, but I'm leaving in in case we need the info in the future
@@ -79,12 +79,21 @@ class Order(db.Model):
     def __str__(self):
         return '<Order %r>' % self.id
     
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+    product = db.relationship('Product', backref='order_items')
+    
 class Wishlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
 
-    user = db.relationship('User', backref=db.backref('wishlists', lazy=True))
+    user = db.relationship('User', back_populates='wishlist')
     product = db.relationship('Product', backref=db.backref('wishlist_items', lazy=True))
 
     def __repr__(self):
