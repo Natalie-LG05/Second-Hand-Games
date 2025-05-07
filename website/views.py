@@ -1,6 +1,6 @@
 from flask import Blueprint, session, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
 from flask import current_app as app
-from .models import Product, Cart, Order, Wishlist
+from .models import Product, Cart, Order, Wishlist, OrderItem
 from flask_login import login_required, current_user
 from . import db
 from intasend import APIService
@@ -52,9 +52,7 @@ def cloudinary_url_to_base64(cloudinary_url):
 
 @views.route('/')
 def home():
-
     items = Product.query.all()
-
     return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
 
@@ -142,6 +140,30 @@ def view_product(product_id):
         session['recently_viewed'] = recently_viewed
 
     return render_template('product_details.html', product=product)
+
+
+@views.route('/buy_now/<int:product_id>', methods=['POST'])
+@login_required
+def buy_now(product_id):
+    product = Product.query.get_or_404(product_id)
+    quantity = int(request.form.get('quantity',1))
+    total = product.current_price * quantity
+    # create order
+    new_order = Order(user_id=current_user.id, total_price=total)
+    db.session.add(new_order)
+    db.session.commit()
+    # add orderitem
+    order_item = OrderItem(
+        order_id=new_order.id,
+        product_id=product.id,
+        quantity=quantity,
+        price=product.current_price
+    )
+    db.session.add(order_item)
+    db.session.commit()
+
+    flash('Order placed successfully!', 'success')
+    return redirect(url_for('views.order'))
 
 
 @views.route('/add-item',methods=['GET','POST'])
@@ -465,7 +487,7 @@ def place_order():
 @views.route('/orders')
 @login_required
 def order():
-    orders = Order.query.filter_by(user_id=current_user.id).all()
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.timestamp.desc()).all()
     return render_template('orders.html', orders=orders)
 
 
