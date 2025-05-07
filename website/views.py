@@ -442,7 +442,7 @@ def place_order():
 
                 db.session.delete(item)
 
-    db.session.commit()
+                db.session.commit()
 
             flash('Order Placed Successfully')
 
