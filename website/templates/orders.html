@@ -24,7 +24,7 @@
                                 {% for item in order.order_items %}
                                 <div class="row mb-3">
                                     <div class="col-sm-3 text-center align-self-center">
-                                        <img src="{{ url_for('static', filename='uploads/' ~ item.product.image) }}" alt="{{ item. product.product_name }}" class="img-fluid img-thumbnail shadow-sm" height="150px" width="150px">
+                                        <img src="{{ url_for('static', filename='uploads/' ~ item.product.image) }}" alt="{{ item.product.product_name }}" class="img-fluid img-thumbnail shadow-sm" height="150px" width="150px">
                                     </div>
                                     <div class="col-sm-7">
                                         <h4>{{ item.product.product_name }}</h4>

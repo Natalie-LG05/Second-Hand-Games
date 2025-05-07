@@ -1,29 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Order History</h2>
 
-{% extends 'base.html' %}
-
-{% block title %} Update Order {% endblock %}
-
-
-{% block body %}
-
-<table class="table table-dark table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Order Status</th>
-            <th scope="col">Order Status</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <tr>
-            <form action="" method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-
-                <td>{{ form.order_status }}</td>
-                <td>{{ form.update() }}</td>
-            </form>
-        </tr>
-    </tbody>
-</table>
-
+    {% if orders %}
+        {% for order in orders %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>Order #{{ order.id }}</strong> —
+                    <small>{{ order.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+                <div class="card-body">
+                    {% for item in order.items %}
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='images/' ~ item.product.image) }}"
+                                 alt="{{ item.product.name }}"
+                                 style="width: 100px; height: auto; margin-right: 15px;">
+                            <div>
+                                <h5>{{ item.product.name }}</h5>
+                                <p>Quantity: {{ item.quantity }}</p>
+                                <p>Price: ${{ item.price }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                    <p><strong>Total: ${{ order.total_price }}</strong></p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You have no orders yet.</p>
+    {% endif %}
+</div>
 {% endblock %}
