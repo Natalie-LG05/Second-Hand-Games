@@ -178,7 +178,7 @@ def add_item():
 
         # At least one of these fields is required to have data; if both have data than:
         #   an uploaded image takes priority over an image taken with the user's camera via the website's interface
-        image_file = request.files.get('image')
+        image_file = request.files.get('image_file')
         image_data = request.form.get('camera_input')
 
         if (not name) or (not price) or ((not image_file) and (not image_data)):  # requires that image_file or image_data is entered
@@ -201,7 +201,7 @@ def add_item():
         files = os.listdir(app.config['UPLOAD_FOLDER'])
         num_files = len(files)
 
-        filename = secure_filename(f'image_upload_{num_files+1}.png')
+        filename = secure_filename(f'image_upload_{num_files}.png')
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
@@ -228,7 +228,6 @@ def add_item():
                 description=description,
                 image=filename,
                 user_id=current_user.id,
-
             )
             db.session.add(new_item)
             db.session.commit()
@@ -249,6 +248,7 @@ def add_item():
 @login_required
 def profile():
     orders = Order.query.filter_by(user_id=current_user.id).all()
+
     #fetches recently viewed form session
     recently_viewed_ids = session.get('recently_viewed', [])
     recently_viewed = Product.query.filter(Product.id.in_(recently_viewed_ids)).all()
@@ -517,7 +517,11 @@ def analyze_image():
             return jsonify({'error': 'No image uploaded'}), 400
 
         # Save the image temporarily
+        # files = os.listdir(app.config['UPLOAD_FOLDER'])
+        # num_files = len(files)
+        # filename = secure_filename(f'ai/image_upload_{num_files}.png')
         filename = secure_filename(image_file.filename)
+
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
         image_file.save(filepath)
@@ -567,7 +571,9 @@ def analyze_image():
             match = re.search(r'\{.*\}', raw_content, re.DOTALL)
             ai_data = json.loads(match.group()) if match else {}
 
+            os.remove(filepath)
             return jsonify(ai_data)
 
         except Exception as e:
+            os.remove(filepath)
             return jsonify({'error': f'Error processing image: {str(e)}'}), 500
