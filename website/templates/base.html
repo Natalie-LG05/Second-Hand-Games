@@ -100,11 +100,11 @@
                 {% if current_user.is_authenticated %}
                   {% if current_user.profile_picture and current_user.profile_picture != 'default.jpeg' %}
                     <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
-                        alt="Profile Picture" class="navbar-profile-pic" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"> 
+                        alt="Profile Picture" class="navbar-profile-pic" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%; margin: 2px;"> 
                   {% else %}
                     <img src="{{ url_for('static', filename='images/default.jpeg') }}"
                         alt="Profile Picture" class="navbar-profile-pic"
-                        style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;">
+                        style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%; margin: 2px;">
                   {% endif %}
 
                   <!-- Display username -->

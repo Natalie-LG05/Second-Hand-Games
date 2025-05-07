@@ -10,14 +10,14 @@
     <div class="row">
         {% if orders %}
 
-        <h1 class="text-center mb-5" style="color: white;">Orders</h1>
+        <h1 class="text-center mb-5" style="color: rgb(18, 147, 27);">Orders</h1>
         <div class="col-sm-13">
-            <div class="card">
+            <div class="card" style="background-color: rgb(23, 113, 29);">
                 <div class="card-body">
                     <!-- <h3>Orders</h3> -->
                     {% for order in orders %}
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
+                        <div class="card mb-4" style="background-color: rgb(18, 147, 27);">
+                            <div class="card-header" style="background-color: rgb(18, 147, 27);">
                                 <strong>Order #{{ order.id }}</strong> - {{ order.timestamp.strftime('%Y-%m-%d %H:%M') }}
                             </div>
                             <div class="card-body">
@@ -60,7 +60,7 @@
         </div>
 
         {% else %}
-        <h1 class="text-center mb-5" style="color: white;">You have no Orders</h1>
+        <h1 class="text-center mb-5" style="color: rgb(18, 147, 27);">You have no Orders</h1>
 
         {% endif %}
     </div>

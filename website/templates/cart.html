@@ -10,9 +10,9 @@
     <div class="row">
         {% if cart %}
 
-        <h1 class="text-center mb-5" style="color: white;">Shopping Cart</h1>
+        <h1 class="text-center mb-5" style="color: rgb(18, 147, 27);">Shopping Cart</h1>
         <div class="col-sm-8">
-            <div class="card">
+            <div class="card" style="background-color: rgb(18, 147, 27);">
                 <div class="card-body">
 
                     {% for item in cart %}
@@ -34,7 +34,7 @@
 
                                 <div class="d-flex justify-content-between">
                                     <p class="mb-0"><span><strong>${{ item.product.price }}</strong></span></p>
-                                    <a href="" class="remove-cart btn btn-sm btn-secondary mr-3 " pid="{{item.id}}">Remove</a>
+                                    <a href="" style="color: rgb(18, 147, 27); background-color: rgb(2, 39, 4);" class="remove-cart btn btn-sm btn-secondary mr-3 " pid="{{item.id}}">Remove</a>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
         </div>
 
         <div class="col-sm-4">
-            <div class="card">
+            <div class="card" style="background-color: rgb(18, 147, 27);">
                 <div class="card-body">
                     <h3>Cart Summary </h3>
                     <hr color="black">
@@ -71,7 +71,7 @@
 
                     </ul>
 
-                    <div class="d-grid"><a href="/place-order" class="btn btn-primary">Place Order</a></div>
+                    <div class="d-grid"><a href="/place-order" style="color: rgb(18, 147, 27); background-color: rgb(2, 39, 4); border-color: rgb(18, 147, 27);" class="btn btn-primary">Place Order</a></div>
 
                 </div>
             </div>
@@ -81,7 +81,7 @@
 
         {% else %}
 
-        <h1 class="text-center mb-5" style="color: white;">Your Cart is Empty</h1>
+        <h1 class="text-center mb-5" style="color: rgb(18, 147, 27);">Your Cart is Empty</h1>
 
         {% endif %}
     </div>

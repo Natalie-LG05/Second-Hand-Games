@@ -4,22 +4,22 @@
 
 {% block body %}
 <div class="container my-5">
-    <h2 class="text-white mb-4">Your Wishlist</h2>
+    <h2  style="color: rgb(18, 147, 27); margin: 20px;">Your Wishlist</h2>
 
     {% if wishlist %}
         <div class="row">
             {% for item in wishlist %}
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
+                <div class="card h-100" style="background-color: rgb(18, 147, 27);">
                     <img src="{{ url_for('static', filename='uploads/' + item.product.image) }}" alt="{{ item.product.product_name }}">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ item.product.product_name }}</h5>
                         <p class="card-text">${{ item.product.price }}</p>
                         <p class="card-text">{{ item.product.description[:100] }}...</p>
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ url_for('views.product_details', product_id=item.product.id) }}" class="btn btn-primary btn-sm">View</a>
+                            <a href="{{ url_for('views.product_details', product_id=item.product.id) }}" class="btn btn-primary btn-sm" style="color: rgb(18, 147, 27); background-color: rgb(2, 39, 4);">View</a>
                             <form method="POST" action="{{ url_for('views.remove_from_wishlist', item_id=item.id) }}">
-                                <button type="submit" class="btn btn-danger btn-sm">Remove from Wishlist</button>
+                                <button type="submit" class="btn btn-danger btn-sm" style="color: rgb(18, 147, 27); background-color: rgb(2, 39, 4);">Remove from Wishlist</button>
                             </form>
                         </div>
                     </div>
@@ -28,7 +28,7 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-white">Your wishlist is empty.</p>
+        <p style="color: rgb(18, 147, 27);">Your wishlist is empty.</p>
     {% endif %}
 </div>
 {% endblock %}

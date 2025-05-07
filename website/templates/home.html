@@ -4,12 +4,12 @@
 
 {% block body %}
 
-<div class="container text-center">
+<div class="container text-center" style="border-radius: 10px; ">
     <div class="row" style="margin: 8px; background-color: rgb(51, 50, 55);" id="column">
         {% for item in items %}
-            <div class="col" style="background-color: rgb(51, 50, 55);">
+            <div class="col" style="background-color: rgb(51, 50, 55); margin: 10px;">
             
-                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="" style="height: 225px; width: 300px; border-radius: 10px; margin: 8px;">
+                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="" style="height: 225px; width: 300px; border-radius: 10px; margin: 10px; object-fit: cover;">
 
                 <div class="row" style="margin-top: 5px;">
                     <h6 style="color: gray;">{{ item.product_name }}</h6>
