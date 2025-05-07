@@ -124,7 +124,7 @@ def view_product(product_id):
 def buy_now(product_id):
     product = Product.query.get_or_404(product_id)
     quantity = int(request.form.get('quantity',1))
-    total = product.current_price * quantity
+    total = product.price * quantity
     # create order
     new_order = Order(user_id=current_user.id, total_price=total)
     db.session.add(new_order)
@@ -134,7 +134,7 @@ def buy_now(product_id):
         order_id=new_order.id,
         product_id=product.id,
         quantity=quantity,
-        price=product.current_price
+        price=product.price
     )
     db.session.add(order_item)
     db.session.commit()
@@ -178,7 +178,7 @@ def add_item():
         files = os.listdir(app.config['UPLOAD_FOLDER'])
         num_files = len(files)
 
-        filename = secure_filename(f'image_upload_{num_files+1}')
+        filename = secure_filename(f'image_upload_{num_files+1}.png')
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
