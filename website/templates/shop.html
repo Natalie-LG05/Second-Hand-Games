@@ -30,20 +30,29 @@
     </div>
 
     <script>
-        function filterProducts() {
-            let input = document.getElementById('search-input');
-            let filter = input.value.toLowerCase();
-            let productItems = document.getElementsByClassName('product-item');
+        // Function to filter products by category
+        function filterByCategory() {
+            const filter = document.getElementById('category-filter').value;
+            const items = document.getElementsByClassName('product-item');
 
-            for (let i = 0; i < productItems.length; i++) {
-                let productName = productItems[i].getElementsByTagName("h2")[0].textContent || productItems[i].getElementsByTagName("h2")[0].innerText;
-                if (productName.toLowerCase().indexOf(filter) > -1) {
-                    productItems[i].style.display = "";
+            console.log("Selected Category Filter: ", filter); // Debugging the selected category filter
+
+            for (let item of items) {
+                const category = item.getAttribute('data-category');
+                console.log("Product Category in Data Attribute: ", category); // Debugging each product's category
+                
+                if (filter === 'all' || category === filter) {
+                    item.style.display = '';
                 } else {
-                    productItems[i].style.display = "none";
+                    item.style.display = 'none';
                 }
             }
         }
+
+        // Initial call to apply the filter for any pre-selected category
+        document.addEventListener('DOMContentLoaded', () => {
+            filterByCategory(); // Call function on page load to ensure it's working with the default "all" filter
+        });
     </script>
 
     <style>
@@ -51,30 +60,57 @@
             width: 80%;
             margin: auto;
         }
+
+        .shop-layout {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        /* filter sidebar */
+        .filter-sidebar {
+            width: 220px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0,.1);
+        }
+
+        .filter-sidebar select {
+            width: 100%;
+        }
+
+        /* product list */
         .product-list {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
+            flex-grow: 1;
         }
+
         .product-item {
             border: 1px solid #ddd;
             padding: 15px;
             border-radius: 8px;
             text-align: center;
         }
+
         .product-image {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;;
+            border-radius: 8px;
         }
+
         .product-info h2 {
             font-size: 1.2em;
             margin: 10px 0;
         }
+
         .product-info p {
             font-size: 1em;
             margin: 5px 0;
         }
+
         .btn {
             background-color: #007bff;
             color: white;
@@ -84,18 +120,23 @@
             display: inline-block;
             margin-top: 10px;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
         .btn-add-to-cart {
             background-color: #28a745;
         }
+
         .btn-add-to-cart:hover {
             background-color: #218838;
         }
+
         .btn-details {
             background-color: #ffc107;
         }
+
         .btn-details:hover {
             background-color: #e0a800;
         }
