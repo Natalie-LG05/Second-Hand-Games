@@ -31,7 +31,6 @@ class ShopItemsForm(FlaskForm):
     price = FloatField('Current Price', validators=[DataRequired()])
     product_picture_file = FileField('Product Picture File')
     product_picture_camera = StringField('Product Picture Camera')
-
     add_product = SubmitField('Add Product')
     update_product = SubmitField('Update')
 

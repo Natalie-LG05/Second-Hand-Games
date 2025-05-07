@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
+from flask import Blueprint, session, render_template, flash, redirect, request, jsonify, url_for, current_app as app, session
 from flask import current_app as app
 from .models import Product, Cart, Order, Wishlist, OrderItem
 from flask_login import login_required, current_user
@@ -13,6 +13,14 @@ from flask_mail import Message, Mail
 from . import mail
 import base64
 from .forms import ShopItemsForm
+import cloudinary.uploader
+import openai
+import base64
+import requests
+import re
+import json
+from io import BytesIO
+
 
 
 views = Blueprint('views', __name__)
@@ -21,11 +29,26 @@ API_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'
 
 API_TOKEN = 'YOUR_API_TOKEN'
 
+cloudinary.config(
+    cloud_name=("dtqohanvi"),
+    api_key=("437918759626267"),
+    api_secret=("ZJ8f3zSFYoMk7q__4EUy6gOf3yQ")
+)
+
+openai.api_key = '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'
 
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.',1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
+def cloudinary_url_to_base64(cloudinary_url):
+    response = requests.get(cloudinary_url)
+    if response.status_code == 200:
+        content_type = response.headers.get("Content-Type", "image/png")
+        encoded = base64.b64encode(response.content).decode("utf-8")
+        return f"data:{content_type};base64,{encoded}"
+    else:
+        raise Exception("Failed to fetch image from Cloudinary")
 
 @views.route('/')
 def home():
@@ -155,7 +178,7 @@ def add_item():
 
         # At least one of these fields is required to have data; if both have data than:
         #   an uploaded image takes priority over an image taken with the user's camera via the website's interface
-        image_file = request.files.get('image_file')
+        image_file = request.files.get('image')
         image_data = request.form.get('camera_input')
 
         if (not name) or (not price) or ((not image_file) and (not image_data)):  # requires that image_file or image_data is entered
@@ -167,8 +190,8 @@ def add_item():
             # If an image was uploaded, check that it is a valid file
             if not allowed_file(image_file.filename):
                 flash('Invalid image format', category='error')
-        elif not image_file:
-            # If no image was uploaded, then use the image data from the image taken with the user's camera
+                return render_template('add_shop_items.html', user=current_user)
+        elif image_data:
             image_data = image_data.split(',')[1]
             image_bytes = base64.b64decode(image_data)
 
@@ -195,27 +218,31 @@ def add_item():
         try:
             price = float(price)
 
-            # Code to generate the AI price rating goes around here
-            # price_rating = 0
+            # Upload to Cloudinary
+            cloud_result = cloudinary.uploader.upload(filepath)
+            image_url = cloud_result.get("secure_url")
 
             new_item = Product(
                 product_name=name,
                 price=price,
                 description=description,
-                image=filename,  # saves the name not the path,
+                image=filename,
                 user_id=current_user.id,
 
-                # Once the DB models are updated, the price rating will go here
-                # price_rating=price_rating,
             )
             db.session.add(new_item)
             db.session.commit()
+
             flash('Item added successfully!', category='success')
             return redirect(url_for('views.shop'))
+
         except ValueError:
             flash('Invalid price format', category='error')
+        except Exception as e:
+            flash(f'Error saving item: {str(e)}', category='error')
 
     return render_template('add_shop_items.html', user=current_user)
+
 
 
 @views.route('/profile', methods=['GET','POST'])
@@ -430,10 +457,10 @@ def place_order():
                 order_item = OrderItem(
                     product_id=product.id,
                     quantity=cart_item.quantity,
-                    price=product.current_price
+                    price=product.price
                 )
                 order.order_items.append(order_item)
-                total_price += product.current_price * cart_item.quantity
+                total_price += product.price * cart_item.quantity
 
         # Set the total price for the order
         order.total_price = total_price
@@ -478,3 +505,69 @@ def search():
                            if current_user.is_authenticated else [])
 
     return render_template('search.html')
+
+@views.route('/analyze-image', methods=['POST'])
+@login_required
+def analyze_image():
+    if request.method == 'POST':
+        # Get the uploaded image file
+        image_file = request.files.get('image')
+        
+        if not image_file:
+            return jsonify({'error': 'No image uploaded'}), 400
+
+        # Save the image temporarily
+        filename = secure_filename(image_file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        image_file.save(filepath)
+
+        # Upload image to Cloudinary
+        cloud_result = cloudinary.uploader.upload(filepath)
+        image_url = cloud_result.get("secure_url")
+
+        # Convert image to base64 for OpenAI
+        base64_image = cloudinary_url_to_base64(image_url)
+
+        # Call OpenAI to analyze the image
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": (
+                            "Please analyze this image and return only a valid JSON object in this exact format:\n"
+                            "{\n"
+                            '  "console_brand": "PlayStation, Xbox, Nintendo, Sega, etc. or None",\n'
+                            '  "console_model": "Model name if visible, e.g., PS5, Xbox Series X",\n'
+                            '  "game_name": "The name of any visible or identifiable video game",\n'
+                            '  "controller_type": "Description or type of any visible controller",\n'
+                            '  "visible_text": "Any text visible on screen, disc, or console",\n'
+                            '  "number_of_consoles": 0,\n'
+                            '  "estimated_price": "Estimated resale or retail price in USD as a number, e.g., 399.99"\n'
+                            "}\n"
+                            "Return only valid JSON. No explanation or markdown formatting."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": base64_image}
+                            }
+                        ]
+                    }
+                ],
+                max_tokens=1000  # <-- You were missing this comma before
+            )
+
+            raw_content = response.choices[0].message.content.strip()
+            match = re.search(r'\{.*\}', raw_content, re.DOTALL)
+            ai_data = json.loads(match.group()) if match else {}
+
+            return jsonify(ai_data)
+
+        except Exception as e:
+            return jsonify({'error': f'Error processing image: {str(e)}'}), 500
