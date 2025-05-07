@@ -217,8 +217,6 @@ def add_item():
 
         try:
             price = float(price)
-            previous_price_input = request.form.get('previous_price')
-            previous_price = float(previous_price_input) if previous_price_input else None
 
             # Upload to Cloudinary
             cloud_result = cloudinary.uploader.upload(filepath)
@@ -459,10 +457,10 @@ def place_order():
                 order_item = OrderItem(
                     product_id=product.id,
                     quantity=cart_item.quantity,
-                    price=product.current_price
+                    price=product.price
                 )
                 order.order_items.append(order_item)
-                total_price += product.current_price * cart_item.quantity
+                total_price += product.price * cart_item.quantity
 
         # Set the total price for the order
         order.total_price = total_price
