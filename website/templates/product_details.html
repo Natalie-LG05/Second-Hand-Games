@@ -10,15 +10,15 @@
         </div>
         <div class="col-sm-6">
             <h2>{{ product.product_name }}</h2>
-            <h4 class="text-success">Ksh {{ product.price }}</h4>
+            <h4 class="text-success">Price {{ product.price }}</h4>
             {% if product.previous_price %}
-            <p class="text-muted"><del>Ksh {{ product.previous_price }}</del></p>
+            <p class="text-muted"><del>Price {{ product.previous_price }}</del></p>
             {% endif %}
             <p>{{ product.description }}</p>
 
             {% if current_user.is_authenticated %}
                 <form action="{{url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: rgb(6, 121, 13);">Add to Cart</button>
                 </form>
                 {% set is_in_wishlist = false %}
                 {% for item in current_user.wishlist %}
@@ -29,18 +29,15 @@
 
                 {% if not is_in_wishlist %}
                     <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
-                        <button type="submit" class="btn btn-warning mt-2">Add to Wishlist</button>
+                        <button type="submit" class="btn btn-warning mt-2" style="background-color: rgb(6, 121, 13);">Add to Wishlist</button>
                     </form>
 
                 {% else %}
-                <p class="text-warning">Login to add to cart</p>
+                <p class="text-warning" style="background-color: rgb(6, 121, 13);">Login to add to cart</p>
                 {% endif %}
             {% endif %}
             <form action="{{ url_for('views.buy_now', product_id=product.id) }}" method="POST">
-                <div class="input-group mb-3" style="width: 120px;">
-                    <input type="number" name="quantity" value="1" min="1" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-warning">
+                <button type="submit" class="btn btn-warning" style="background-color: rgb(6, 121, 13); margin-top: 10px;">
                     Buy Now
                 </button>
             </form>

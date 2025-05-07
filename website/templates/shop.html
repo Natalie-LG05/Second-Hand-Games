@@ -4,10 +4,6 @@
     <div class="shop-container">
         <h1>Welcome to Our Shop</h1>
 
-        <div class="product-filter">
-            <input type="text" placeholder="Search for products" id="search-input" onkeyup="filterProducts()">
-        </div>
-
         <div class="product-list">
             {% for product in products %}
                 <div class="product-item" id="product-{{ product.id }}">
@@ -112,7 +108,7 @@
         }
 
         .btn {
-            background-color: #007bff;
+            background-color:rgb(18, 147, 27);
             color: white;
             padding: 10px;
             border-radius: 5px;
@@ -122,23 +118,23 @@
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color:rgb(10, 66, 13);
         }
 
         .btn-add-to-cart {
-            background-color: #28a745;
+            background-color:rgb(18, 147, 27);
         }
 
         .btn-add-to-cart:hover {
-            background-color: #218838;
+            background-color:rgb(10, 66, 13);
         }
 
         .btn-details {
-            background-color: #ffc107;
+            background-color:rgb(27, 27, 28);
         }
 
         .btn-details:hover {
-            background-color: #e0a800;
+            background-color: rgb(58, 58, 61);
         }
     </style>
 {% endblock %}
