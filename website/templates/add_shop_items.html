@@ -41,77 +41,8 @@
         <canvas id="canvas" width="300" height="225"></canvas>
     </div>
     
-    <script src="{{ url_for( 'static', filename='js/camera.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
 </div>
-
-<script>
-    async function autoFillFields() {
-        const imageFile = document.getElementById('image').files[0];
-
-        if (imageFile) {
-            const formData = new FormData();
-            formData.append('image', imageFile);
-
-            const response = await fetch('/analyze-image', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data) {
-                // Generate product name
-                let name = '';
-                if (data.game_name && data.game_name !== "None") {
-                    name = data.game_name;
-                } else {
-                    const nameParts = [data.console_brand, data.console_model];
-                    name = nameParts.filter(part => part && part !== "None").join(' ');
-                }
-                document.getElementById('name').value = name;
-
-                // Build product description
-                const descParts = [];
-
-                if (data.console_brand && data.console_brand !== "None") {
-                    descParts.push(data.console_brand);
-                }
-
-                if (data.game_name && data.game_name !== "None") {
-                    descParts.push(`Game: ${data.game_name}`);
-                } else if (data.console_model && data.console_model !== "None") {
-                    descParts.push(`Console: ${data.console_model}`);
-                }
-
-                if (data.controller_type && data.controller_type !== "None") {
-                    descParts.push(`Controller: ${data.controller_type}`);
-                }
-
-                document.getElementById('description').value = descParts.join(' | ');
-
-                // Fill price if valid
-                if (data.estimated_price && data.estimated_price !== "None") {
-                    document.getElementById('price').value = data.estimated_price;
-                }
-
-                // Optional debug output
-                if (!document.getElementById("ai-debug")) {
-                    const pre = document.createElement("pre");
-                    pre.id = "ai-debug";
-                    pre.style = "background:#f9f9f9; padding:10px; margin-top:10px;";
-                    document.querySelector("form").appendChild(pre);
-                }
-                document.getElementById("ai-debug").textContent = JSON.stringify(data, null, 2);
-            }
-        }
-    }
-
-    // Trigger on image selection
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("image").addEventListener("change", autoFillFields);
-    });
-</script>
-
-
+<script src="{{  url_for('static', filename='js/AI_autofill.js') }}"></script>
 
 {% endblock %}
