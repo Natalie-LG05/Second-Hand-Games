@@ -29,7 +29,7 @@
                                     <div class="col-sm-7">
                                         <h4>{{ item.product.product_name }}</h4>
                                         <p class="mb-2 text-muted small">Quantity: {{item.quantity }}</p>
-                                        <p class="mb-2 text-muted small">Price: Ksh {{ item.price }}</p>
+                                        <p class="mb-2 text-muted small">Price: ${{ item.price }}</p>
                                     </div>
                                     <div class="col-sm-2">
                                         <p>Status: {{ item.status }}</p>
@@ -49,7 +49,7 @@
                                 {% endfor %}
                                 <hr>
                                 <div class="text-end">
-                                    <strong>Total: Ksh {{ order.total_price }}</strong>
+                                    <strong>Total: ${{ order.total_price }}</strong>
                                 </div>
                             </div>
                         </div>
