@@ -1,39 +1,100 @@
 
 {% extends 'base.html' %}
-
-{% block title %} Home {% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block body %}
 
-<div class="container my-5">
-    <div class="row">
-        <h3 style="color: white;">Welcome <span class="text-capitalize">{{ customer.username }}</span></h3>
+<div class="container mt-5 text-white">
+    <h2>Your Profile</h2>
 
-        <div class="col-sm-2 border-end" style="margin-top: 20px;">
-        
-            <ul class="list-unstyled">
-                <li class="d-grid"><a href="#" class="btn btn-primary">Profile</a></li>
-                <li class="d-grid"><a href="/change-password" class="btn btn-primary" style="margin-top: 5px;">Change Password</a></li>
+    <!-- profile pic -->
+    <div class="mb-3">
+        <img src="{{ url_for('static', filename='uploads/' + (current_user.profile_picture or 'default.jpeg')) }}" 
+         alt="Profile Picture" class="rounded-circle profile-page-pic">
+    </div>
 
-            </ul>
-        
+    <!-- update profile pic -->
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group mt-3">
+            <label for="profile_picture">Upload Profile Picture</label>
+            <input type="file" class="form-control" name="profile_picture" id="profile_picture">
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Update Picture</button>
+    </form>
+
+    <hr>
+
+    edit user info
+    <h4>Edit Your Info</h4>
+    <form method="POST" action="{{ url_for('views.update_profile') }}">
+        <div class="form-group mt-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" value="{{ current_user.email }}">
+        </div>
+        <div class="form-group mt-3">
+            <label for="phone_number">Phone Number</label>
+            <input type="text" class="form-control" name="phone_number" value="{{ current_user.phone_number }}">
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Update info</button>
+    </form>
+
+    <hr>
+
+    <!-- change password -->
+    <h4>Change Password</h4>
+    <form method="POST" action="{{ url_for('views.change_password') }}">
+        <div class="form-group mt-3">
+            <label for="current_password">Current Password</label>
+            <input type="password" class="form_control" name="current_password" required>
         </div>
 
-        <div class="col-sm-5 offset-sm-1" style="background-color: white; border-radius: 18px; margin-top: 20px;">
-            <div class="row">
+        <div class="form-group mt-3">
+            <label for="new_password">New Password</label>
+            <input type="password" name="new_password" id="new_password" required>
+        </div>
 
-                <div class="col-sm-8">
-                    <div class="card m-2">
+        <button type="submit" class="btn btn-warning mt-2">Change Password</button>
+    </form>
 
-                        <h3>{{ customer.username }}</h3>
-                        <p>Email: {{ customer.email }}</p>
+    <hr>
+
+    <h4>Your Orders</h4>
+    {% if orders %}
+        <ul class="list-group text-dark">
+            {% for order in orders %}
+                <li class="list-group-item">
+                    <strong>{{ order.product.product_name }}</strong> -
+                    Quantity: {{ order.quantity }},
+                    Price: %{{ order.price }},
+                    Status: {{ order.status }},
+                    Date: {{ order.date_added.strftime('%Y-%m-%d') }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't placed any orders yet.</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- recently viewed -->
+    <h4>Recently Viewed Products</h4>
+    {% if recenctly_viewed %}
+        <div class="row">
+            {% for product in recenctly_viewed %}
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100 bg-dark text-white">
+                        <img src="{{ url_for('static', filename='uploads/' + product.image) }}" class="card-img-top" alt="{{ product.product_name}}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.product_name }}</h5>
+                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-outline-light btn-sm">View</a>
+                        </div>
                     </div>
                 </div>
-
-            </div>
-        
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <p>No recently viewed products.</p>
+    {% endif %}
 </div>
-
 {% endblock %}
