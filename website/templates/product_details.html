@@ -10,7 +10,7 @@
         </div>
         <div class="col-sm-6">
             <h2>{{ product.product_name }}</h2>
-            <h4 class="text-success">Ksh {{ product.current_price }}</h4>
+            <h4 class="text-success">Ksh {{ product.price }}</h4>
             {% if product.previous_price %}
             <p class="text-muted"><del>Ksh {{ product.previous_price }}</del></p>
             {% endif %}
