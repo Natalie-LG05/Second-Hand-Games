@@ -2,8 +2,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/template-styles/add-shop-items.css') }}">
+ 
 <div class="container mt-5">
     <h2>Add Shop Items</h2>
+
     <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Product Name</label>
@@ -19,20 +22,27 @@
             <label for="price" class="form-label">Price ($)</label>
             <input type="number" step="0.01" class="form-control" id="price" name="price" required>
         </div>
-        
-        <div class="mb-3">
-            <label for="previous_price">Previous Price:</label>
-            <input type="number" step="0.01" name="previous_price" id="previous_price">
-            <br>
-        </div>
 
         <div class="mb-3">
             <label for="image" class="form-label">Upload Product Image</label>
-            <input class="form-control" type="file" id="image" name="image" id="image" accept="image/*" required>
+            <input class="form-control" type="file" id="image_file" name="image_file" accept="image/*">
         </div>
 
+        <div class="mb-3" id="camera-input-div">
+            <label for="camera" class="form-label">Take Product Image Using Camera</label>
+            <input class="form-control" type="text" id="camera_input" name="camera_input">
+        </div>
         <button type="submit" class="btn btn-primary">Add item</button>
     </form>
+
+    <button id="capture-button" class="btn btn-primary">Take Picture</button>
+    <div class="camera-display-div">
+        <video id="player" height="300" width="300" controls playsinline autoplay></video>
+        <canvas id="canvas" width="300" height="225"></canvas>
+    </div>
+    
+    <script src="{{ url_for( 'static', filename='js/camera.js') }}"></script>
 </div>
+
 
 {% endblock %}

@@ -11,7 +11,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from PIL import Image, ImageOps
 from flask_mail import Message, Mail
 from . import mail
-##############################################################################################################################################
+import base64
+from .forms import ShopItemsForm
+
 
 views = Blueprint('views', __name__)
 
@@ -19,11 +21,12 @@ API_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'
 
 API_TOKEN = 'YOUR_API_TOKEN'
 
-##############################################################################################################################################
+
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.',1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
-##############################################################################################################################################
+
+
 @views.route('/')
 def home():
 
@@ -31,7 +34,8 @@ def home():
 
     return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
-##############################################################################################################################################
+
+
 @views.route('/contact', methods=['GET','POST'])
 def contact():
     if request.method =='POST':
@@ -54,7 +58,6 @@ def contact():
     return render_template('contact.html')
 
 
-##############################################################################################################################################
 @views.route('/update_profile', methods=['POST'])
 @login_required
 def update_profile():
@@ -74,7 +77,8 @@ def update_profile():
         flash(f"Error updating profile: {e}", category='error')
     
     return redirect(url_for('views.profile'))
-##############################################################################################################################################
+
+
 @views.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
@@ -100,7 +104,8 @@ def change_password():
         flash('Current password is incorrect.', category='error')
     
     return redirect(url_for('views.profile'))
-##############################################################################################################################################
+
+
 @views.route('/view_product/<int:product_id>')
 def view_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -114,50 +119,83 @@ def view_product(product_id):
         session['recently_viewed'] = recently_viewed
 
     return render_template('product_details.html', product=product)
-##############################################################################################################################################
+
+
 @views.route('/add-item',methods=['GET','POST'])
 @login_required
 def add_item():
     if request.method == 'POST':
+        print('form_submitted!')
+
         name = request.form.get('name')
         price = request.form.get('price')
         description = request.form.get('description')
-        image_file = request.files.get('image')
 
-        if not name or not price or not image_file:
+        # At least one of these fields is required to have data; if both have data than:
+        #   an uploaded image takes priority over an image taken with the user's camera via the website's interface
+        image_file = request.files.get('image_file')
+        image_data = request.form.get('camera_input')
+
+        if (not name) or (not price) or ((not image_file) and (not image_data)):  # requires that image_file or image_data is entered
             flash('Name, price, and image are required.',category='error')
             return render_template('add_shop_items.html', user=current_user)
-        
-        if image_file and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        image_bytes = None  # Defaults to None: when an image is uploaded
+        if image_file:
+            # If an image was uploaded, check that it is a valid file
+            if not allowed_file(image_file.filename):
+                flash('Invalid image format', category='error')
+        elif not image_file:
+            # If no image was uploaded, then use the image data from the image taken with the user's camera
+            image_data = image_data.split(',')[1]
+            image_bytes = base64.b64decode(image_data)
+
+        # Determine the filepath for the uploaded/taken image to be saved to within the server
+        # First, count the number of files in the uploads folder; the filename will be one higher than that amount
+        #   to ensure unique file names
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        num_files = len(files)
+
+        filename = secure_filename(f'image_upload_{num_files+1}')
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        if image_file:
             image_file.save(filepath)
+        elif image_bytes:
+            # If no image was uploaded, then an image was taken using the user's camera
+            # Writes the image data bytes to the file
+            with open(filepath, 'w') as _:
+                pass
+            with open(filepath, 'wb') as f:
+                f.write(image_bytes)
 
-            try:
-                price = float(price)
-                previous_price_input = request.form.get('previous_price')
-                previous_price = float(previous_price_input) if previous_price_input else None
-                new_item = Product(
-                    product_name=name,
-                    current_price=price,
-                    description=description,
-                    image=filename, # saves the name not the path,
-                    user_id=current_user.id,
-                    previous_price=previous_price
-                )
-                db.session.add(new_item)
-                db.session.commit()
-                flash('Item added successfully!', category='success')
-                return redirect(url_for('views.shop'))
-            except ValueError:
-                flash('Invalid price format', category='error')
+        try:
+            price = float(price)
 
-        else:
-            flash('Invalid image format', category='error')
+            # Code to generate the AI price rating goes around here
+            # price_rating = 0
+
+            new_item = Product(
+                product_name=name,
+                current_price=price,
+                description=description,
+                image=filename,  # saves the name not the path,
+                user_id=current_user.id,
+
+                # Once the DB models are updated, the price rating will go here
+                # price_rating=price_rating,
+            )
+            db.session.add(new_item)
+            db.session.commit()
+            flash('Item added successfully!', category='success')
+            return redirect(url_for('views.shop'))
+        except ValueError:
+            flash('Invalid price format', category='error')
 
     return render_template('add_shop_items.html', user=current_user)
-##############################################################################################################################################
+
+
 @views.route('/profile', methods=['GET','POST'])
 @login_required
 def profile():
@@ -189,17 +227,20 @@ def profile():
         return redirect(url_for('views.profile'))
     
     return render_template('profile.html', user=current_user, orders=orders, recently_viewed=recently_viewed)
-##############################################################################################################################################
+
+
 @views.route('/shop')
 def shop():
     products = Product.query.all()
     return render_template('shop.html', products=products)
-##############################################################################################################################################
+
+
 @views.route('/product/<int:product_id>')
 def product_details(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template('product_details.html', product=product)
-##############################################################################################################################################
+
+
 @views.route('/add-to-cart/<int:item_id>', methods=['POST'])
 @login_required
 def add_to_cart(item_id):
@@ -216,18 +257,21 @@ def add_to_cart(item_id):
         print(f"added to cart: {product.product_name}")
         
     return redirect(url_for('views.show_cart'))
-##############################################################################################################################################
+
+
 @views.route('/debug_cart')
 def debug_cart():
     cart_items = Cart.query.all()
     return "<br>".join([f"User: {item.user_id}, Product: {item.product_id}, Quantity: {item.quantity}" for item in cart_items])
-##############################################################################################################################################
+
+
 @views.route('/cart')
 @login_required
 def show_cart():
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     return render_template('cart.html', cart=cart_items)
-##############################################################################################################################################
+
+
 @views.route('/pluscart')
 @login_required
 def plus_cart():
@@ -251,7 +295,8 @@ def plus_cart():
         }
 
         return jsonify(data)
-##############################################################################################################################################
+
+
 @views.route('/minuscart')
 @login_required
 def minus_cart():
@@ -275,7 +320,8 @@ def minus_cart():
         }
 
         return jsonify(data)
-##############################################################################################################################################
+
+
 @views.route('removecart')
 @login_required
 def remove_cart():
@@ -299,7 +345,8 @@ def remove_cart():
         }
 
         return jsonify(data)
-##############################################################################################################################################
+
+
 @views.route('/add-to-wishlist/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_wishlist(product_id):
@@ -317,13 +364,15 @@ def add_to_wishlist(product_id):
         flash('This product is already in your wishlist.', category='warning')
 
     return redirect(url_for('views.product_details', product_id=product.id))
-##############################################################################################################################################
+
+
 @views.route('/wishlist')
 @login_required
 def wishlist():
     wishlist_items = Wishlist.query.filter_by(user_id=current_user.id).all()
     return render_template('wishlist.html', wishlist=wishlist_items)
-##############################################################################################################################################
+
+
 @views.route('/remove-from-wishlist/<int:item_id>', methods=['POST'])
 @ login_required
 def remove_from_wishlist(item_id):
@@ -337,7 +386,8 @@ def remove_from_wishlist(item_id):
         flash('You are not authorized to remove this item', category='danger')
 
     return redirect(url_for('views.wishlist'))
-##############################################################################################################################################
+
+
 @views.route('/place-order')
 @login_required
 def place_order():
@@ -382,13 +432,15 @@ def place_order():
     else:
         flash('Your cart is Empty')
         return redirect('/')
-##############################################################################################################################################
+
+
 @views.route('/orders')
 @login_required
 def order():
     orders = Order.query.filter_by(user_id=current_user.id).all()
     return render_template('orders.html', orders=orders)
-##############################################################################################################################################
+
+
 @views.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':

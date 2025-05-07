@@ -1,0 +1,20 @@
+#capture-button {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.camera-display-div {
+  display: grid;
+  grid-template-columns: 300px 300px;
+  align-items: center;
+  column-gap: 20px;
+  margin-top: 0;
+}
+
+#player {
+  padding-top: 0;
+}
+
+#canvas {
+  padding-top: 0;
+}
