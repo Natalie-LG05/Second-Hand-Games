@@ -71,16 +71,13 @@ def update_item(item_id):
         item_to_update = Product.query.get(item_id)
 
         form.product_name.render_kw = {'placeholder': item_to_update.product_name}
-        form.previous_price.render_kw = {'placeholder': item_to_update.previous_price}
         form.price.render_kw = {'placeholder': item_to_update.price}
-        form.in_stock.render_kw = {'placeholder': item_to_update.in_stock}
-        form.flash_sale.render_kw = {'placeholder': item_to_update.flash_sale}
 
         if form.validate_on_submit():
             product_name = form.product_name.data
             price = form.price.data
 
-            file = form.product_picture.data
+            file = form.product_picture_file.data
 
             file_name = secure_filename(file.filename)
             file_path = f'./media/{file_name}'
