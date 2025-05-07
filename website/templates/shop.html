@@ -4,15 +4,29 @@
     <div class="shop-container">
         <h1>Welcome to Our Shop</h1>
 
+        <div class="shop-layout"
+        <!-- filter sidebar -->
+            <div class="filter-sidebar">
+                <h4>Filter by Category</h4>
+                <select id="category-filter" onchange="filterByCategory()" class="form-select mb-3">
+                    <option value="all">All</option>
+                    <option value="console">Gaming Consoles</option>
+                    <option value="cartridge">Game Cartridges</option>
+                    <option value="disc">Game Discs</option>
+                    <option value="controller">Game Controllers</option>
+                </select>
+            </div>
+
         <div class="product-list">
             {% for product in products %}
-                <div class="product-item" id="product-{{ product.id }}">
+                <div class="product-item" data-category="{{ product.category }}">
                     <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.product_name }}" class="product-image">
 
                     <div class="product-info">
                         <h2>{{ product.product_name }}</h2>
                         <p>{{ product.description }}</p>
                         <p><strong>Price:</strong> ${{ product.current_price }}</p>
+                        <p><strong>Category:</strong> {{ product.category }}</p>
 
                         <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-details">View Details</a>
 
@@ -95,5 +109,64 @@
         .btn-details:hover {
             background-color: #e0a800;
         }
+        .shop-layout {
+            display: flex;
+            gap: 30px;
+        }
+        /* sidebar */
+        .filter-sidebar {
+            width: 220px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0,.1);
+            height: fit-content;
+        }
+        /* product grid */
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 20px;
+            flex-grow: 1;
+        }
     </style>
+
+    <script>
+        function filterProducts() {
+            let input = document.getElementById('search-input');
+            let filter = input.value.toLowerCase();
+            let productItems = document.getElementsByClassName('product-item');
+
+            for (let i = 0; i < productItems.length; i++) {
+                let productName = productItems[i].getElementsByTagName("h2")[0].textContent || productItems[i].getElementsByTagName("h2")[0].innerText;
+                if (productName.toLowerCase().indexOf(filter) > -1) {
+                    productItems[i].style.display = "";
+                } else {
+                    productItems[i].style.display = "none";
+                }
+            }
+        }
+            const categoryMap = {
+            'console': 'Gaming Console',
+            'cartridge': 'Game Cartridge',
+            'disc': 'Game Disc',
+            'controller': 'Game Controller'
+        };
+
+        function filterByCategory() {
+            const filter = document.getElementById('category-filter').value;
+            const items = document.getElementsByClassName('product-item');
+
+            const filterCategory = categoryMap[filter] || filter;
+
+            for (let item of items) {
+                const category = item.getAttribute('data-category');
+                if (filter === 'all' || category === filterCategory) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        }
+    </script>
 {% endblock %}

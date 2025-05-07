@@ -165,6 +165,7 @@ def add_item():
 
             try:
                 price = float(price)
+                category = request.form.get('category')
                 previous_price_input = request.form.get('previous_price')
                 previous_price = float(previous_price_input) if previous_price_input else None
                 new_item = Product(
@@ -173,7 +174,8 @@ def add_item():
                     description=description,
                     image=filename, # saves the name not the path,
                     user_id=current_user.id,
-                    previous_price=previous_price
+                    previous_price=previous_price,
+                    category=category
                 )
                 db.session.add(new_item)
                 db.session.commit()

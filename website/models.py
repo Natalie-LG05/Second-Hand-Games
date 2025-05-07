@@ -43,6 +43,7 @@ class Product(db.Model):
     image = db.Column(db.String(300), nullable=True)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     flash_sale = db.Column(db.Boolean, nullable=False, default=False)
+    category = db.Column(db.String(100), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
