@@ -29,9 +29,7 @@ def allowed_file(filename):
 
 @views.route('/')
 def home():
-
-    items = Product.query.filter_by(flash_sale=True)
-
+    items = Product.query.all()
     return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
 
