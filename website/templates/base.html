@@ -79,7 +79,7 @@
 
           
           <li class="nav-item dropdown mx-2">
-            <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" role="button"
+            <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" style="color: rgb(18, 147, 27);"href="#" role="button"
               id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
               {% if current_user.is_authenticated %}
                 {% if current_user.profile_picture and current_user.profile_picture != 'default.jpeg' %}
@@ -96,15 +96,15 @@
               {% endif %}
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown" style="color:rgb(18, 147, 27); background-color: rgb(27, 27, 28);">
               {% if current_user.is_authenticated %}
-                <li><a class="dropdown-item" href="{{ url_for('views.profile') }}">Profile <i class="fa-solid fa-user"></i></a></li>
-                <li><a class="dropdown-item" href="{{ url_for('views.order') }}">Orders <i class="fa-solid fa-truck-fast"></i></a></li>
-                <li><a class="dropdown-item" href="{{ url_for('auth.log_out') }}">Log Out <i class="fa-solid fa-right-from-bracket"></i></a></li>
+                <li><a class="dropdown-item" style="color:rgb(18, 147, 27);" href="{{ url_for('views.profile') }}">Profile <i class="fa-solid fa-user"></i></a></li>
+                <li><a class="dropdown-item" style="color:rgb(18, 147, 27);" href="{{ url_for('views.order') }}">Orders <i class="fa-solid fa-truck-fast"></i></a></li>
+                <li><a class="dropdown-item" style="color:rgb(18, 147, 27);" href="{{ url_for('auth.log_out') }}">Log Out <i class="fa-solid fa-right-from-bracket"></i></a></li>
 
               {% else %}
-                <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">Login <i class="fa-solid fa-right-from-bracket"></i></a></li>
-                <li><a class="dropdown-item" href="{{ url_for('auth.sign_up') }}">Sign Up <i class="fa-solid fa-user-plus"></i></a></li>
+                <li><a class="dropdown-item" style="color:rgb(18, 147, 27);" href="{{ url_for('auth.login') }}">Login <i class="fa-solid fa-right-from-bracket"></i></a></li>
+                <li><a class="dropdown-item" style="color:rgb(18, 147, 27);" href="{{ url_for('auth.sign_up') }}">Sign Up <i class="fa-solid fa-user-plus"></i></a></li>
               {% endif %}
             </ul>
           </li>
@@ -134,8 +134,8 @@
     {% endblock %}
 
 
-    <footer class="container-fluid  text-center p-2 mt-5" style="background-color: orange; color: white;">
-      <a href="https://github.com/Natalie-LG05/Second-Hand-Games" style="color: white;">Second Hand Games</a> | <span>
+    <footer class="container-fluid  text-center p-2 mt-5" style="background-color: rgb(18, 147, 27); color: rgb(27, 27, 28);">
+      <a href="https://github.com/Natalie-LG05/Second-Hand-Games" style="color: rgb(27, 27, 28);">Second Hand Games</a> | <span>
         <i class="fa-sharp fa-regular fa-copyright"></i></span> Gamers for Life
 
     </footer>
