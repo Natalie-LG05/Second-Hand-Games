@@ -174,7 +174,7 @@ def buy_now(product_id):
 @login_required
 def add_item():
     if request.method == 'POST':
-        print('form_submitted!')
+        # print('form_submitted!')
 
         name = request.form.get('name')
         price = request.form.get('price')
@@ -207,6 +207,13 @@ def add_item():
 
         filename = secure_filename(f'image_upload_{num_files}.png')
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        # In case a file filepath exists with the same name, keep going until a unique name is found
+        if os.path.exists(filepath):
+            print(filename)
+            while os.path.exists(filepath):
+                filename =f'image_upload_{num_files+1}.png'
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
         if image_file:
@@ -521,10 +528,9 @@ def analyze_image():
             return jsonify({'error': 'No image uploaded'}), 400
 
         # Save the image temporarily
-        # files = os.listdir(app.config['UPLOAD_FOLDER'])
-        # num_files = len(files)
-        # filename = secure_filename(f'ai/image_upload_{num_files}.png')
-        filename = secure_filename(image_file.filename)
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        num_files = len(files)
+        filename = secure_filename('ai/' + image_file.filename + str(num_files))
 
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
