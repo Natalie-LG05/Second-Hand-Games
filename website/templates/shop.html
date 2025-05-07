@@ -16,7 +16,7 @@
                     <div class="product-info">
                         <h2>{{ product.product_name }}</h2>
                         <p>{{ product.description }}</p>
-                        <p><strong>Price:</strong> ${{ product.current_price }}</p>
+                        <p><strong>Price:</strong> ${{ product.price }}</p>
 
                         <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-details">View Details</a>
 
