@@ -29,9 +29,12 @@
 
     <hr>
 
-    edit user info
     <h4>Edit Your Info</h4>
     <form method="POST" action="{{ url_for('views.update_profile') }}">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username" value="{{ user.username }}" required>
+        </div>
         <div class="form-group mt-3">
             <label for="email">Email</label>
             <input type="email" class="form-control" name="email" value="{{ current_user.email }}">
