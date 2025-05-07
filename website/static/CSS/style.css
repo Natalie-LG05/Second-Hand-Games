@@ -1,8 +1,8 @@
 
 
 :root {
-    --primary-color: rgb(6, 121, 13);
-    --primary-dark: rgb(10, 66, 13);
+    --primary-color: rgb(22, 90, 27);
+    --primary-dark: rgb(2, 39, 4);
     --text-color: rgb(18, 147, 27);
     --bg-color: rgb(27, 27, 28);
     --border-color: rgb(22, 199, 34);
@@ -110,5 +110,10 @@ a:hover {
     border-radius: 10px;
     padding: 7px;
     margin: 5px;
+    color: var(--main-text);
+}
+
+.buttons {
+    background-color: var(--card-bg);
     color: var(--main-text);
 }
