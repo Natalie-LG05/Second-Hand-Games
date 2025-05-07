@@ -11,6 +11,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from PIL import Image, ImageOps
 from flask_mail import Message, Mail
 from . import mail
+import base64
+from .forms import ShopItemsForm
 
 
 views = Blueprint('views', __name__)
@@ -20,7 +22,6 @@ API_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'
 API_TOKEN = 'YOUR_API_TOKEN'
 
 
-
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.',1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
@@ -28,9 +29,7 @@ def allowed_file(filename):
 
 @views.route('/')
 def home():
-
-    items = Product.query.filter_by(flash_sale=True)
-
+    items = Product.query.all()
     return render_template('home.html', items=items, cart=Cart.query.filter_by(user_id=current_user.id).all()
                            if current_user.is_authenticated else [])
 
@@ -148,44 +147,73 @@ def buy_now(product_id):
 @login_required
 def add_item():
     if request.method == 'POST':
+        print('form_submitted!')
+
         name = request.form.get('name')
         price = request.form.get('price')
         description = request.form.get('description')
-        image_file = request.files.get('image')
 
-        if not name or not price or not image_file:
+        # At least one of these fields is required to have data; if both have data than:
+        #   an uploaded image takes priority over an image taken with the user's camera via the website's interface
+        image_file = request.files.get('image_file')
+        image_data = request.form.get('camera_input')
+
+        if (not name) or (not price) or ((not image_file) and (not image_data)):  # requires that image_file or image_data is entered
             flash('Name, price, and image are required.',category='error')
             return render_template('add_shop_items.html', user=current_user)
-        
-        if image_file and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        image_bytes = None  # Defaults to None: when an image is uploaded
+        if image_file:
+            # If an image was uploaded, check that it is a valid file
+            if not allowed_file(image_file.filename):
+                flash('Invalid image format', category='error')
+        elif not image_file:
+            # If no image was uploaded, then use the image data from the image taken with the user's camera
+            image_data = image_data.split(',')[1]
+            image_bytes = base64.b64decode(image_data)
+
+        # Determine the filepath for the uploaded/taken image to be saved to within the server
+        # First, count the number of files in the uploads folder; the filename will be one higher than that amount
+        #   to ensure unique file names
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        num_files = len(files)
+
+        filename = secure_filename(f'image_upload_{num_files+1}')
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        if image_file:
             image_file.save(filepath)
+        elif image_bytes:
+            # If no image was uploaded, then an image was taken using the user's camera
+            # Writes the image data bytes to the file
+            with open(filepath, 'w') as _:
+                pass
+            with open(filepath, 'wb') as f:
+                f.write(image_bytes)
 
-            try:
-                price = float(price)
-                category = request.form.get('category')
-                previous_price_input = request.form.get('previous_price')
-                previous_price = float(previous_price_input) if previous_price_input else None
-                new_item = Product(
-                    product_name=name,
-                    current_price=price,
-                    description=description,
-                    image=filename, # saves the name not the path,
-                    user_id=current_user.id,
-                    previous_price=previous_price,
-                    category=category
-                )
-                db.session.add(new_item)
-                db.session.commit()
-                flash('Item added successfully!', category='success')
-                return redirect(url_for('views.shop'))
-            except ValueError:
-                flash('Invalid price format', category='error')
+        try:
+            price = float(price)
 
-        else:
-            flash('Invalid image format', category='error')
+            # Code to generate the AI price rating goes around here
+            # price_rating = 0
+
+            new_item = Product(
+                product_name=name,
+                price=price,
+                description=description,
+                image=filename,  # saves the name not the path,
+                user_id=current_user.id,
+
+                # Once the DB models are updated, the price rating will go here
+                # price_rating=price_rating,
+            )
+            db.session.add(new_item)
+            db.session.commit()
+            flash('Item added successfully!', category='success')
+            return redirect(url_for('views.shop'))
+        except ValueError:
+            flash('Invalid price format', category='error')
 
     return render_template('add_shop_items.html', user=current_user)
 
@@ -280,7 +308,7 @@ def plus_cart():
         amount = 0
 
         for item in cart:
-            amount += item.product.current_price * item.quantity
+            amount += item.product.price * item.quantity
 
         data = {
             'quantity': cart_item.quantity,
@@ -305,7 +333,7 @@ def minus_cart():
         amount = 0
 
         for item in cart:
-            amount += item.product.current_price * item.quantity
+            amount += item.product.price * item.quantity
 
         data = {
             'quantity': cart_item.quantity,
@@ -330,7 +358,7 @@ def remove_cart():
         amount = 0
 
         for item in cart:
-            amount += item.product.current_price * item.quantity
+            amount += item.product.price * item.quantity
 
         data = {
             'quantity': cart_item.quantity,
@@ -385,40 +413,47 @@ def remove_from_wishlist(item_id):
 @views.route('/place-order')
 @login_required
 def place_order():
-    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
-    if not cart_items:
-        flash("Cart is empty.", category="error")
-        return redirect(url_for('views.home'))
+    customer_cart = Cart.query.filter_by(user_id=current_user.id)
+    if customer_cart:
+        try:
+            total = 0
+            for item in customer_cart:
+                total += item.product.price * item.quantity
 
-    total = 0
-    for item in cart_items:
-        if item.product.current_price is None:
-            flash(f"Product {item.product.product_name} does not have a price.", category="error")
-            return redirect(url_for('views.hom'))
-        total += item.product.current_price * item.quantity
+            service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
+            create_order_response = service.collect.mpesa_stk_push(phone_number='YOUR_NUMBER ', email=current_user.email,
+                                                                   amount=total + 200, narrative='Purchase of goods')
 
-    new_order = Order(user_id=current_user.id, total_price=total)
-    db.session.add(new_order)
+            for item in customer_cart:
+                new_order = Order()
+                new_order.quantity = item.quantity
+                new_order.price = item.product.price
+                new_order.status = create_order_response['invoice']['state'].capitalize()
+                new_order.payment_id = create_order_response['id']
+
+                new_order.product_id = item.product_id
+                new_order.user_id = item.user_id
+
+                db.session.add(new_order)
+
+                product = Product.query.get(item.product_id)
+
+                product.in_stock -= item.quantity
+
+                db.session.delete(item)
+
     db.session.commit()
 
-    for item in cart_items:
-        order_item = OrderItem(
-            order_id=new_order.id,
-            product_id=item.product_id,
-            quantity=item.quantity,
-            price=item.product.current_price
-        )
-        db.session.add(order_item)
+            flash('Order Placed Successfully')
 
-    # Remove each item individually
-    for item in cart_items:
-        db.session.delete(item)
-
-    db.session.commit()
-
-    flash("Order placed successfully!", category="success")
-
-    return redirect(url_for('views.home'))
+            return redirect('/orders')
+        except Exception as e:
+            print(e)
+            flash('Order not placed')
+            return redirect('/')
+    else:
+        flash('Your cart is Empty')
+        return redirect('/')
 
 
 @views.route('/orders')

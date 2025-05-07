@@ -22,12 +22,9 @@ def add_shop_items():
 
         if form.validate_on_submit():
             product_name = form.product_name.data
-            current_price = form.current_price.data
-            previous_price = form.previous_price.data
-            in_stock = form.in_stock.data
-            flash_sale = form.flash_sale.data
+            price = form.price.data
 
-            file = form.product_picture.data
+            file = form.product_picture_file.data
 
             file_name = secure_filename(file.filename)
 
@@ -37,10 +34,7 @@ def add_shop_items():
 
             new_shop_item = Product()
             new_shop_item.product_name = product_name
-            new_shop_item.current_price = current_price
-            new_shop_item.previous_price = previous_price
-            new_shop_item.in_stock = in_stock
-            new_shop_item.flash_sale = flash_sale
+            new_shop_item.price = price
 
             new_shop_item.product_picture = file_path
 
@@ -77,19 +71,13 @@ def update_item(item_id):
         item_to_update = Product.query.get(item_id)
 
         form.product_name.render_kw = {'placeholder': item_to_update.product_name}
-        form.previous_price.render_kw = {'placeholder': item_to_update.previous_price}
-        form.current_price.render_kw = {'placeholder': item_to_update.current_price}
-        form.in_stock.render_kw = {'placeholder': item_to_update.in_stock}
-        form.flash_sale.render_kw = {'placeholder': item_to_update.flash_sale}
+        form.price.render_kw = {'placeholder': item_to_update.price}
 
         if form.validate_on_submit():
             product_name = form.product_name.data
-            current_price = form.current_price.data
-            previous_price = form.previous_price.data
-            in_stock = form.in_stock.data
-            flash_sale = form.flash_sale.data
+            price = form.price.data
 
-            file = form.product_picture.data
+            file = form.product_picture_file.data
 
             file_name = secure_filename(file.filename)
             file_path = f'./media/{file_name}'
@@ -98,10 +86,7 @@ def update_item(item_id):
 
             try:
                 Product.query.filter_by(id=item_id).update(dict(product_name=product_name,
-                                                                current_price=current_price,
-                                                                previous_price=previous_price,
-                                                                in_stock=in_stock,
-                                                                flash_sale=flash_sale,
+                                                                price=price,
                                                                 product_picture=file_path))
 
                 db.session.commit()
