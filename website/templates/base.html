@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,18 +29,16 @@
         <a class="navbar-brand" href="#" style="color: orange; font-size: 30px; margin-right: -2px;">
           <i class="fa-brands fa-Second Hand Games"></i>
         </a>
-          </li>
-        </ul>
+
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/" style="font-family: cursive; font-size: 19px;">Second Hand Games</a>
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item"
-              </ul>
             </li>
 
             <li class="nav-item">
@@ -53,7 +50,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-grey" href="#" style="font-size: 17px;">Contact us</a>
+              <a class="nav-link text-grey" href="{{ url_for('views.contact') }}" style="font-size: 17px;">Contact us</a>
             </li>
           </ul>
 
@@ -65,35 +62,41 @@
 
         
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
           <li class="nav-item mx-2" id="items">
-            
             {% if cart | length < 1 %}
-            <a class="nav-link text-grey" href="/cart"><span class="badge bg-success"></span> Cart
-              <i class="fa-solid fa-cart-shopping"></i>
-            </a>
+              <a class="nav-link text-grey" href="/cart">
+                <span class="badge bg-success"></span> Cart <i class="fa-solid fa-cart-shopping"></i>
+              </a>
             {% else %}
             <a class="nav-link text-grey" href="/cart"><span class="badge bg-success"></span> Cart
               <i class="bi bi-{{ cart | length }}-square-fill"></i>
             </a>
-            
             {% endif %}
-            
-            
           </li>
 
           <li class="nav-item mx-2" id="items">
-            <a class="nav-link text-grey" href="#"><span class="badge bg-success"></span> WishList
-              <i class="fa-solid fa-heart"></i>
+            <a class="nav-link text-grey" href="{{ url_for('views.wishlist') }}">
+              Wishlist <i class="fa-solid fa-heart"></i>
             </a>
           </li>
 
           
           <li class="nav-item dropdown mx-2">
-            <a class="nav-link dropdown-toggle text-grey" href="#" role="button", id="profileDropdown" 
-            data-bs-toggle="dropdown" aria-hidden="false">
-              Account
-            </a>
+            {% if current_user.is_authenticated %}
+              <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" rolebutton" id="profileDropdown"
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
+                     alt="Profile Picture" class="navbar-profile-pic" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"> 
+                {{ current_user.username }}
+              </a>
+            {% else %}
+              <li class="nav-item dropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                  <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">Login</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('auth.sign_up') }}">Sign Up</a></li>
+                </ul>
+              </li>
+            {% endif %}
             <ul class="dropdown-menu" aria-labelledby="profileDropdown">
 
             
@@ -124,11 +127,11 @@
 
     {% for message in get_flashed_messages() %}
 
-    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 5px;">
-        <strong>{{ message }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    
-    </div>
+      <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 5px;">
+          <strong>{{ message }}</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      
+      </div>
     {% endfor %}
 
     {% block body %}
