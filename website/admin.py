@@ -23,11 +23,8 @@ def add_shop_items():
         if form.validate_on_submit():
             product_name = form.product_name.data
             current_price = form.current_price.data
-            previous_price = form.previous_price.data
-            in_stock = form.in_stock.data
-            flash_sale = form.flash_sale.data
 
-            file = form.product_picture.data
+            file = form.product_picture_file.data
 
             file_name = secure_filename(file.filename)
 
