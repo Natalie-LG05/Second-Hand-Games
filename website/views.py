@@ -86,13 +86,17 @@ def update_profile():
     email = request.form.get('email')
     phone_number = request.form.get('phone_number')
 
+    if len(username) > 30:
+        flash('Username cannot exceed 30 characters!', category='error')
+        return redirect(url_for('views.profile'))
+
     current_user.username = username
     current_user.email = email
     current_user.phone_number = phone_number
 
     try:
         db.session.commit()
-        flash('Profile updated successuflly!', category='success')
+        flash('Profile updated successfully!', category='success')
     except Exception as e:
         db.session.rollback()
         flash(f"Error updating profile: {e}", category='error')
