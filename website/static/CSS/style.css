@@ -1,17 +1,40 @@
 
-.d-flex .btn{
-    background: orange;
-    border: 2px solid orange;
-    border-radius: 8px;
-    color: #fff;
-}
-.d-flex .btn:hover{
-    background: rgb(228, 150, 7);
-    border: 2px solid rgb(228, 150, 7);
+
+:root {
+    --primary-color: rgb(6, 121, 13);
+    --primary-dark: rgb(10, 66, 13);
+    --text-color: rgb(18, 147, 27);
+    --bg-color: rgb(27, 27, 28);
+    --border-color: rgb(22, 199, 34);
 }
 
-#right1 :hover{
-    color: orange;
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+a {
+    color: var(--main-text);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--highlight);
+}
+
+.d-flex .btn {
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--text-color);
+}
+.d-flex .btn:hover {
+    background: var(--primary-dark);
+    border: 2px solid var(--primary-dark);
+}
+
+#right1 :hover {
+    color: var(--primary-color);
     transition: 300ms;
 }
 
@@ -23,25 +46,25 @@
 }
 
 .container .row .col .row .col a {
-    background-color: orange;
+    background-color: var(--primary-color);
     padding: 10px;
     border-radius: 10px;
     text-decoration: none;
-    color: white;
-
+    color: var(--text-color);
 }
 
-.container .row .col .row .col a :hover {
-    background-color: rgb(201, 132, 5);
+.container .row .col .row .col a:hover {
+    background-color: var(--primary-dark);
 }
-#column :hover{
+
+#column :hover {
     transform: scale(0.9);
     transition: 450ms;
     border-radius: 10px;
 }
 
 #items :hover {
-    color: orange;
+    color: var(--primary-color);
     transition: 200ms;
 }
 
@@ -54,16 +77,38 @@
 .navbar-profile-pic {
     width: 150px;
     height: 150px;
-    border-radius: 50%; /*makes it a circle */
-    object-fit: cover; /*keeps ratio and still fills the square */
+    border-radius: 50%;
+    object-fit: cover;
     display: block;
-    border: 1px solid black;
+    border: 1px solid var(--primary-color);
 }
 
 .profile-page-pic {
     width: 150px;
     height: 150px;
-    border-radius: 50%; /*makes it a circle */
-    object-fit: cover; /*keeps ratio and still fills the square */
-    border: 2px solid black;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+
+.list-group-item {
+    background-color: var(--card-bg);
+    color: var(--main-text);
+    border: 1px solid var(--highlight);
+}
+
+.list-group-item:hover {
+    background-color: var(--highlight);
+    color: black;
+}
+
+.muted {
+    color: var(--muted-text);
+}
+.custom-box {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 7px;
+    margin: 5px;
+    color: var(--main-text);
 }

@@ -21,13 +21,13 @@
 
     <title>Second Hand Games | {% block title %} {% endblock %}</title>
 </head>
-<body style="background-color: rgb(124, 14, 151);">
+<body>
 
 
     <!-- navbar section -->
-    <nav class="navbar navbar-expand-lg" style="background-color: white;">
+    <nav class="navbar navbar-expand-lg" style="background-color: rgb(27, 27, 28); color: rgb(18, 147, 27);">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#" style="color: orange; font-size: 30px; margin-right: -2px;">
+        <a class="navbar-brand" href="#" style="color: rgb(18, 147, 27); font-size: 30px; margin-right: -2px;">
           <i class="fa-brands fa-Second Hand Games"></i>
         </a>
 
@@ -39,44 +39,40 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/" style="font-family: cursive; font-size: 19px;">Second Hand Games</a>
+              <a class="nav-link active" aria-current="page" href="/" style="font-family: cursive; font-size: 19px; color: rgb(18, 147, 27)">Second Hand Games</a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-grey" href="{{ url_for('views.add_item') }}" style="font-size: 17px;">Add Shop Item</a>
+              <a class="nav-link text-grey" href="{{ url_for('views.add_item') }}" style="font-size: 17px; color: rgb(18, 147, 27);">Add Shop Item</a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-grey" href="#" style="font-size: 17px;">About Us</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link text-grey" href="{{ url_for('views.contact') }}" style="font-size: 17px;">Contact us</a>
+              <a class="nav-link text-grey" href="{{ url_for('views.contact') }}" style="font-size: 17px; color: rgb(18, 147, 27);">Contact us</a>
             </li>
           </ul>
 
           <form class="d-flex" role="search" action="/search" style="margin-right: 170px;" method="POST">
             <input class="form-control me-2" name="search" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn" type="submit">Search</button>
+            <button class="btn" style="color: rgb(27, 27, 28)" type="submit">Search</button>
           </form>
         </div>
 
         
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item mx-2" id="items">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="color: rgb(18, 147, 27);">
+          <li class="nav-item mx-2" id="items" style="color: rgb(18, 147, 27);">
             {% if cart | length < 1 %}
-              <a class="nav-link text-grey" href="/cart">
+              <a class="nav-link text-grey" href="/cart" style="color: rgb(18, 147, 27);">
                 <span class="badge bg-success"></span> Cart <i class="fa-solid fa-cart-shopping"></i>
               </a>
             {% else %}
-            <a class="nav-link text-grey" href="/cart"><span class="badge bg-success"></span> Cart
+            <a class="nav-link text-grey" href="/cart" style="color: rgb(18, 147, 27);"><span class="badge bg-success"></span> Cart
               <i class="bi bi-{{ cart | length }}-square-fill"></i>
             </a>
             {% endif %}
           </li>
 
           <li class="nav-item mx-2" id="items">
-            <a class="nav-link text-grey" href="{{ url_for('views.wishlist') }}">
+            <a class="nav-link text-grey" href="{{ url_for('views.wishlist') }}" style="color: rgb(18, 147, 27);">
               Wishlist <i class="fa-solid fa-heart"></i>
             </a>
           </li>
@@ -84,7 +80,7 @@
           
           <li class="nav-item dropdown mx-2">
             {% if current_user.is_authenticated %}
-              <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" rolebutton" id="profileDropdown"
+              <a class="nav-link dropdown-toggle d-flex align-items-center text-grey" href="#" role="button" id="profileDropdown"
                  data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
                      alt="Profile Picture" class="navbar-profile-pic" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"> 
