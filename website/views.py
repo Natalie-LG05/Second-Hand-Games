@@ -156,7 +156,7 @@ def add_item():
 
         # At least one of these fields is required to have data; if both have data than:
         #   an uploaded image takes priority over an image taken with the user's camera via the website's interface
-        image_file = request.files.get('image_file')
+        image_file = request.files.get('image')
         image_data = request.form.get('camera_input')
 
         if (not name) or (not price) or ((not image_file) and (not image_data)):  # requires that image_file or image_data is entered
@@ -203,11 +203,11 @@ def add_item():
 
             new_item = Product(
                 product_name=name,
-                current_price=price,
+                price=price,
                 description=description,
                 image=filename,
                 user_id=current_user.id,
-                previous_price=previous_price
+
             )
             db.session.add(new_item)
             db.session.commit()
