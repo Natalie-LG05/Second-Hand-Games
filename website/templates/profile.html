@@ -69,7 +69,7 @@
 
     <h4>Your Orders</h4>
     {% if orders %}
-        <ul class="list-group text-dark">
+        <ul class="list-group text-white">
             {% for order in orders %}
                 <li class="list-group-item">
                     <strong>Order #{{ order.id }}</strong> - Status: {{ order.status }}, Date: {{ order.timestamp.strftime('%Y-%m-%d') }}
