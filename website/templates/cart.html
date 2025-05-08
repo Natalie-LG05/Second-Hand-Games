@@ -10,9 +10,9 @@
     <div class="row">
         {% if cart %}
 
-        <h1 class="text-center mb-5" style="color: rgb(18, 147, 27);">Shopping Cart</h1>
+        <h1 class="text-center mb-5" style="color: rgb(108, 255, 115);">Shopping Cart</h1>
         <div class="col-sm-8">
-            <div class="card" style="background-color: rgb(18, 147, 27);">
+            <div class="card" style="background-color: white;">
                 <div class="card-body">
 
                     {% for item in cart %}
@@ -26,9 +26,9 @@
                                 <h3>{{ item.product.product_name }}</h3>
                                 <div class="my-3">
                                     <label for="quantity">Quantity</label>
-                                    <a class="minus-cart btn" pid="{{item.id}}"><i class="fas fa-minus-square fa-lg"></i></a>
+                                    <a class="minus-cart btn-custom" pid="{{item.id}}"><i class="fas fa-minus-square fa-lg"></i></a>
                                     <span id="quantity">{{ item.quantity }}</span>
-                                    <a class="plus-cart btn " pid="{{ item.id }}"><i class="fas fa-plus-square fa-lg"></i></a>
+                                    <a class="plus-cart btn-custom" pid="{{ item.id }}"><i class="fas fa-plus-square fa-lg"></i></a>
 
                                 </div>
 
@@ -47,7 +47,7 @@
         </div>
 
         <div class="col-sm-4">
-            <div class="card" style="background-color: rgb(18, 147, 27);">
+            <div class="card" style="background-color: white;">
                 <div class="card-body">
                     <h3>Cart Summary </h3>
                     <hr color="black">

@@ -17,17 +17,30 @@
                         <h5 class="card-title">{{ product.product_name }}</h5>
                         <p class="card-text">${{ product.price }}</p>
                         <p class="card-text">{{ product.description[:100] }}...</p>
-                        <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-custom btn-sm">View</a>
+                        <div class="mt-auto d-flex flex-wrap gap-2 align-items-center">
+                            <a href="{{ url_for('views.product_details', product_id=product.id) }}"
+                               class="btn btn-custom btn-sm equal-height-btn d-flex align-items-center justify-content-center" style="max-width: 80px;">View</a>
+                        
                             {% if current_user.is_authenticated %}
                                 <form method="POST" action="{{ url_for('views.add_to_cart', item_id=product.id) }}">
-                                    <button type="submit" class="btn btn-custom btn-sm">Add to Cart</button>
+                                    <button type="submit"
+                                            class="btn btn-custom btn-sm equal-height-btn d-flex align-items-center justify-content-center" style="max-width: 80px;">
+                                        Add to Cart
+                                    </button>
                                 </form>
+                        
                                 <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
-                                    <button type="submit" class="btn btn-custom btn-sm">Add to Wishlist</button>
+                                    <button type="submit"
+                                            class="btn btn-custom btn-sm equal-height-btn d-flex align-items-center justify-content-center" style="max-width: 80px;">
+                                        Add to Wishlist
+                                    </button>
                                 </form>
+                        
                                 <form method="POST" action="{{ url_for('views.buy_now', product_id=product.id) }}">
-                                    <button type="submit" class="btn btn-custom btn-sm w-100">Buy Now</button>
+                                    <button type="submit"
+                                            class="btn btn-custom btn-sm equal-height-btn d-flex align-items-center justify-content-center" style="max-width: 80px;">
+                                        Buy Now
+                                    </button>
                                 </form>
                             {% endif %}
                         </div>

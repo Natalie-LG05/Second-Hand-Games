@@ -19,18 +19,16 @@
                 
                     <div class="col">
 
-                        <h5 style="font-weight: 600; font-family: 'Times New Roman', Times, serif;">${{ item.price }}</h5>
-                    </div>
+                    <h5 style="font-weight: 600; font-family: 'Times New Roman', Times, serif;">${{ item.price }}</h5>
+                </div>
 
                 <form action="/add-to-cart/{{ item.id }}" method="POST">
-                    <button type="submit" style="background-color: rgb(18, 147, 27)" class="btn btn-sm btn-custom">Add</button>
+                    <button type="submit" style="background-color: rgb(108, 255, 115)" class="btn btn-sm btn-custom">Add to Cart</button>
                 </form>
 
             </div>
 
-            <div class="row">
-                <p>Items Left?: {{ item.in_stock }}</p>
-            </div>
+    
         {% endfor %}
     </div>
 </div>
