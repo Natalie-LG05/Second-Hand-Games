@@ -10,9 +10,9 @@
     <div class="row">
         {% if cart %}
 
-        <h1 class="text-center mb-5" style="color: white;">Shopping Cart</h1>
+        <h1 class="text-center mb-5" style="color: rgb(108, 255, 115);">Shopping Cart</h1>
         <div class="col-sm-8">
-            <div class="card">
+            <div class="card" style="background-color: white;">
                 <div class="card-body">
 
                     {% for item in cart %}
@@ -26,9 +26,9 @@
                                 <h3>{{ item.product.product_name }}</h3>
                                 <div class="my-3">
                                     <label for="quantity">Quantity</label>
-                                    <a class="minus-cart btn" pid="{{item.id}}"><i class="fas fa-minus-square fa-lg"></i></a>
+                                    <a class="minus-cart btn-custom" pid="{{item.id}}"><i class="fas fa-minus-square fa-lg"></i></a>
                                     <span id="quantity">{{ item.quantity }}</span>
-                                    <a class="plus-cart btn " pid="{{ item.id }}"><i class="fas fa-plus-square fa-lg"></i></a>
+                                    <a class="plus-cart btn-custom" pid="{{ item.id }}"><i class="fas fa-plus-square fa-lg"></i></a>
 
                                 </div>
 
@@ -47,7 +47,7 @@
         </div>
 
         <div class="col-sm-4">
-            <div class="card">
+            <div class="card" style="background-color: white;">
                 <div class="card-body">
                     <h3>Cart Summary </h3>
                     <hr color="black">
@@ -59,13 +59,13 @@
                         {% endfor %}
 
 
-                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">Amount <span>Ksh <span id="amount_tt">{{ amount }}</span></span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">Amount <span>$<span id="amount_tt">{{ amount }}</span></span></li>
 
                         <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                             <div style="margin-top: 15px;">
                                 <strong>Total</strong><small>(Including Shipping)</small>
                             </div>
-                            <span><strong>Ksh </strong><span id="totalamount"><strong>{{ total }}</strong></span></span>
+                            <span><strong>$</strong><span id="totalamount"><strong>{{ total }}</strong></span></span>
     
                         </li>
 
