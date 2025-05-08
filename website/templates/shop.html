@@ -14,10 +14,10 @@
                         <p>{{ product.description }}</p>
                         <p><strong>Price:</strong> ${{ product.price }}</p>
 
-                        <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-details">View Details</a>
+                        <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-custom">View Details</a>
 
                         <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
-                            <button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
+                            <button type="submit" class="btn btn-custom">Add to Cart</button>
                         </form>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
         }
 
         .btn {
-            background-color:rgb(18, 147, 27);
+            background-color:rgb(108, 255, 115);
             color: white;
             padding: 10px;
             border-radius: 5px;
@@ -121,20 +121,5 @@
             background-color:rgb(10, 66, 13);
         }
 
-        .btn-add-to-cart {
-            background-color:rgb(18, 147, 27);
-        }
-
-        .btn-add-to-cart:hover {
-            background-color:rgb(10, 66, 13);
-        }
-
-        .btn-details {
-            background-color:rgb(27, 27, 28);
-        }
-
-        .btn-details:hover {
-            background-color: rgb(58, 58, 61);
-        }
     </style>
 {% endblock %}

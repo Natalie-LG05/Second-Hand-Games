@@ -18,7 +18,7 @@
 
             {% if current_user.is_authenticated %}
                 <form action="{{url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
-                    <button type="submit" class="btn btn-primary" style="background-color: rgb(6, 121, 13); border-color: rgb(13, 199, 25)">Add to Cart</button>
+                    <button type="submit" class="btn btn-custom" style="background-color: rgb(6, 121, 13);">Add to Cart</button>
                 </form>
                 {% set is_in_wishlist = false %}
                 {% for item in current_user.wishlist %}
@@ -29,7 +29,7 @@
 
                 {% if not is_in_wishlist %}
                     <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
-                        <button type="submit" class="btn btn-warning mt-2" style="color: white; background-color: rgb(6, 121, 13);border-color: rgb(13, 199, 25);">Add to Wishlist</button>
+                        <button type="submit" class="btn btn-custom mt-2" style="background-color: rgb(6, 121, 13);">Add to Wishlist</button>
                     </form>
 
                 {% else %}
@@ -37,7 +37,7 @@
                 {% endif %}
             {% endif %}
             <form action="{{ url_for('views.buy_now', product_id=product.id) }}" method="POST">
-                <button type="submit" class="btn btn-warning" style="color: white; background-color: rgb(6, 121, 13); border-color: rgb(13, 199, 25); margin-top: 10px;">
+                <button type="submit" class="btn btn-custom" style="background-color: rgb(6, 121, 13); margin-top: 10px;">
                     Buy Now
                 </button>
             </form>

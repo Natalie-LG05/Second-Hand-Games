@@ -24,7 +24,7 @@
             <label for="profile_picture">Upload Profile Picture</label>
             <input type="file" class="form-control" name="profile_picture" id="profile_picture">
         </div>
-        <button type="submit" class="btn btn-primary mt-2" style="background-color: rgb(18, 147, 27); border-color: rgb(18, 147, 27);">Update Picture</button>
+        <button type="submit" class="btn btn-custom mt-2" >Update Picture</button>
     </form>
 
     <hr>
@@ -44,7 +44,7 @@
             <label for="phone_number">Phone Number</label>
             <input type="text" class="form-control" name="phone_number" value="{{ current_user.phone_number }}">
         </div>
-        <button type="submit" class="btn btn-success mt-2" style="background-color: rgb(18, 147, 27); border-color: rgb(18, 147, 27);">Update info</button>
+        <button type="submit" class="btn btn-custom mt-2">Update info</button>
     </form>
 
     <hr>
@@ -62,7 +62,7 @@
             <input type="password" name="new_password" id="new_password" required>
         </div>
 
-        <button type="submit" class="btn btn-warning mt-2" style="background-color: rgb(18, 147, 27); border-color: rgb(18, 147, 27); color:white;">Change Password</button>
+        <button type="submit" class="btn btn-custom mt-2">Change Password</button>
     </form>
 
     <hr>
@@ -99,7 +99,7 @@
                         <img src="{{ url_for('static', filename='uploads/' + product.image) }}" class="card-img-top" alt="{{ product.product_name}}">
                         <div class="card-body">
                             <h5 class="card-title">{{ product.product_name }}</h5>
-                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-outline-light btn-sm">View</a>
+                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-custom btn-sm">View</a>
                         </div>
                     </div>
                 </div>
@@ -110,3 +110,4 @@
     {% endif %}
 </div>
 {% endblock %}
+

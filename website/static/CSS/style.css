@@ -1,9 +1,9 @@
 :root {
-    --primary-color: rgb(22, 90, 27);
-    --primary-dark: rgb(2, 39, 4);
-    --text-color: rgb(18, 147, 27);
-    --bg-color: rgb(27, 27, 28);
-    --border-color: rgb(22, 199, 34);
+    --primary-color: rgb(108, 255, 115);
+    --primary-dark: rgb(52, 131, 56);
+    --text-color: rgb(108, 255, 115);
+    --bg-color: rgb(31, 31, 32);
+    --border-color: rgb(108, 255, 115);
 }
 
 body {
@@ -78,7 +78,7 @@ a:hover {
     border-radius: 50%;
     object-fit: cover;
     display: block;
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--bg-color);
 }
 
 .profile-page-pic {
@@ -86,7 +86,7 @@ a:hover {
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--bg-color);
 }
 
 .list-group-item {
@@ -111,7 +111,54 @@ a:hover {
     color: var(--main-text);
 }
 
-.buttons {
-    background-color: var(--card-bg);
-    color: var(--main-text);
+.btn-custom {
+        background-color: rgb(108, 255, 115);
+        color: rgb(31, 31, 32) !important;
+    }
+
+.camera-display-div Video {
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    margin-top: 20px;}
+
+#canvas {
+    border: 2px solid #fff;
+    margin-top: 10px;
+}
+
+/* rubik glitch font from google fonts */
+.turret-road-extralight {
+font-family: "Turret Road", sans-serif;
+font-weight: 200;
+font-style: normal;
+}
+
+.turret-road-light {
+font-family: "Turret Road", sans-serif;
+font-weight: 300;
+font-style: normal;
+}
+
+.turret-road-regular {
+font-family: "Turret Road", sans-serif;
+font-weight: 400;
+font-style: normal;
+}
+
+.turret-road-medium {
+font-family: "Turret Road", sans-serif;
+font-weight: 500;
+font-style: normal;
+}
+
+.turret-road-bold {
+font-family: "Turret Road", sans-serif;
+font-weight: 700;
+font-style: normal;
+}
+
+.turret-road-extrabold {
+font-family: "Turret Road", sans-serif;
+font-weight: 800;
+font-style: normal;
 }

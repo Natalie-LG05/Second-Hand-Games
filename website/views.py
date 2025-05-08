@@ -185,6 +185,7 @@ def add_item():
         image_file = request.files.get('image_file')
         image_data = request.form.get('camera_input')
 
+        print(f"name: {name}, price: {price}, image file: {image_file}, image data: {image_data}")
         if (not name) or (not price) or ((not image_file) and (not image_data)):  # requires that image_file or image_data is entered
             flash('Name, price, and image are required.',category='error')
             return render_template('add_shop_items.html', user=current_user)

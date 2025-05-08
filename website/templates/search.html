@@ -18,16 +18,16 @@
                         <p class="card-text">${{ product.price }}</p>
                         <p class="card-text">{{ product.description[:100] }}...</p>
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-primary btn-sm">View</a>
+                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-custom btn-sm">View</a>
                             {% if current_user.is_authenticated %}
                                 <form method="POST" action="{{ url_for('views.add_to_cart', item_id=product.id) }}">
-                                    <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
+                                    <button type="submit" class="btn btn-custom btn-sm">Add to Cart</button>
                                 </form>
                                 <form method="POST" action="{{ url_for('views.add_to_wishlist', product_id=product.id) }}">
-                                    <button type="submit" class="btn btn-warning btn-sm">Add to Wishlist</button>
+                                    <button type="submit" class="btn btn-custom btn-sm">Add to Wishlist</button>
                                 </form>
                                 <form method="POST" action="{{ url_for('views.buy_now', product_id=product.id) }}">
-                                    <button type="submit" class="btn btn-danger btn-sm w-100">Buy Now</button>
+                                    <button type="submit" class="btn btn-custom btn-sm w-100">Buy Now</button>
                                 </form>
                             {% endif %}
                         </div>

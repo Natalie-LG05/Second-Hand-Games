@@ -1,10 +1,10 @@
-
 {% extends 'base.html' %}
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/template-styles/add-shop-items.css') }}">
- 
-<div class="container mt-5">
+
+<!-- Use flexbox for the container to make sure it pushes the footer down -->
+<div class="container mt-5 d-flex flex-column" style="min-height: calc(100vh - 60px);"> <!-- Adjust for navbar height -->
     <h2>Add Shop Items</h2>
 
     <form method="POST" enctype="multipart/form-data" id="addItemForm">
@@ -32,17 +32,84 @@
             <label for="camera_input" class="form-label">Take Product Image Using Camera</label>
             <input class="form-control" type="text" id="camera_input" name="camera_input">
         </div>
-        <button type="submit" class="btn btn-primary" style="color: white; background-color: rgb(6, 121, 13); border-color: rgb(13, 199, 25);">Add item</button>
+        <button type="submit" class="btn btn-custom" style="width: 100%; max-width: 200px;">Add item</button>
     </form>
 
-    <button id="capture-button" class="btn btn-primary" style="color: white; background-color: rgb(6, 121, 13); border-color: rgb(13, 199, 25);">Take Picture</button>
-    <div class="camera-display-div" style="margin:10px;">
+    <button id="capture-button" class="btn btn-custom" style="width: 100%; max-width: 200px;">Take Picture</button>
+    <div class="camera-display-div">
         <video id="player" height="300" width="300" controls playsinline autoplay></video>
         <canvas id="canvas" width="300" height="225"></canvas>
     </div>
     
     <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
 </div>
-<script src="{{  url_for('static', filename='js/AI_autofill.js') }}"></script>
+
+<script>
+    async function autoFillFields() {
+        const imageFile = document.getElementById('image_file').files[0];
+
+        if (imageFile) {
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            const response = await fetch('/analyze-image', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data) {
+                // Generate product name
+                let name = '';
+                if (data.game_name && data.game_name !== "None") {
+                    name = data.game_name;
+                } else {
+                    const nameParts = [data.console_brand, data.console_model];
+                    name = nameParts.filter(part => part && part !== "None").join(' ');
+                }
+                document.getElementById('name').value = name;
+
+                // Build product description
+                const descParts = [];
+
+                if (data.console_brand && data.console_brand !== "None") {
+                    descParts.push(data.console_brand);
+                }
+
+                if (data.game_name && data.game_name !== "None") {
+                    descParts.push(`Game: ${data.game_name}`);
+                } else if (data.console_model && data.console_model !== "None") {
+                    descParts.push(`Console: ${data.console_model}`);
+                }
+
+                if (data.controller_type && data.controller_type !== "None") {
+                    descParts.push(`Controller: ${data.controller_type}`);
+                }
+
+                document.getElementById('description').value = descParts.join(' | ');
+
+                // Fill price if valid
+                if (data.estimated_price && data.estimated_price !== "None") {
+                    document.getElementById('price').value = data.estimated_price;
+                }
+
+                // Optional debug output
+                if (!document.getElementById("ai-debug")) {
+                    const pre = document.createElement("pre");
+                    pre.id = "ai-debug";
+                    pre.style = "background:#f9f9f9; padding:10px; margin-top:10px;";
+                    document.querySelector("form").appendChild(pre);
+                }
+                document.getElementById("ai-debug").textContent = JSON.stringify(data, null, 2);
+            }
+        }
+    }
+
+    // Trigger on image selection
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("image").addEventListener("change", autoFillFields);
+    });
+</script>
 
 {% endblock %}
