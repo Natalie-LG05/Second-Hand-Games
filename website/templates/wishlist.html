@@ -4,7 +4,6 @@
 
 {% block body %}
 <div class="container my-5">
-    <h2 class="text-white mb-4">Your Wishlist</h2>
 
     {% if wishlist %}
         <div class="row">
@@ -17,9 +16,9 @@
                         <p class="card-text">Ksh {{ item.product.price }}</p>
                         <p class="card-text">{{ item.product.description[:100] }}...</p>
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ url_for('views.product_details', product_id=item.product.id) }}" class="btn btn-primary btn-sm">View</a>
+                            <a href="{{ url_for('views.product_details', product_id=item.product.id) }}" class="btn btn-custom btn-sm">View</a>
                             <form method="POST" action="{{ url_for('views.remove_from_wishlist', item_id=item.id) }}">
-                                <button type="submit" class="btn btn-danger btn-sm">Remove from Wishlist</button>
+                                <button type="submit" class="btn btn-custom btn-sm">Remove from Wishlist</button>
                             </form>
                         </div>
                     </div>
@@ -28,7 +27,9 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-white">Your wishlist is empty.</p>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+        <h1 class="text-center" style="color: white;">Your Wishlist is Empty</h1>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

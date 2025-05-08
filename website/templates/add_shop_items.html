@@ -1,10 +1,10 @@
-
 {% extends 'base.html' %}
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/template-styles/add-shop-items.css') }}">
- 
-<div class="container mt-5">
+
+<!-- Use flexbox for the container to make sure it pushes the footer down -->
+<div class="container mt-5 d-flex flex-column" style="min-height: calc(100vh - 60px);"> <!-- Adjust for navbar height -->
     <h2>Add Shop Items</h2>
 
     <form method="POST" enctype="multipart/form-data" id="addItemForm">
@@ -32,10 +32,10 @@
             <label for="camera_input" class="form-label">Take Product Image Using Camera</label>
             <input class="form-control" type="text" id="camera_input" name="camera_input">
         </div>
-        <button type="submit" class="btn btn-primary">Add item</button>
+        <button type="submit" class="btn btn-custom" style="width: 100%; max-width: 200px;">Add item</button>
     </form>
 
-    <button id="capture-button" class="btn btn-primary">Take Picture</button>
+    <button id="capture-button" class="btn btn-custom" style="width: 100%; max-width: 200px;">Take Picture</button>
     <div class="camera-display-div">
         <video id="player" height="300" width="300" controls playsinline autoplay></video>
         <canvas id="canvas" width="300" height="225"></canvas>
@@ -46,7 +46,7 @@
 
 <script>
     async function autoFillFields() {
-        const imageFile = document.getElementById('image').files[0];
+        const imageFile = document.getElementById('image_file').files[0];
 
         if (imageFile) {
             const formData = new FormData();
@@ -111,7 +111,5 @@
         document.getElementById("image").addEventListener("change", autoFillFields);
     });
 </script>
-
-
 
 {% endblock %}
