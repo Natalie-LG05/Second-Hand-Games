@@ -12,12 +12,12 @@
 
         <h1 class="text-center mb-5" style="color: rgb(108, 255, 115);">Orders</h1>
         <div class="col-sm-13">
-            <div class="card" style="background-color:white;">
+            <div class="card" style="background-color:rgb(108, 255, 115);">
                 <div class="card-body">
                     <!-- <h3>Orders</h3> -->
                     {% for order in orders %}
-                        <div class="card mb-4" style="background-color:rgb(108, 255, 115);">
-                            <div class="card-header" style="background-color: rgb(108, 255, 115);">
+                        <div class="card mb-4" style="background-color: white;">
+                            <div class="card-header" style="background-color: white">
                                 <strong>Order #{{ order.id }}</strong> - {{ order.timestamp.strftime('%Y-%m-%d %H:%M') }}
                             </div>
                             <div class="card-body">
