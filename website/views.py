@@ -3,23 +3,19 @@ from flask import current_app as app
 from .models import Product, Cart, Order, Wishlist, OrderItem
 from flask_login import login_required, current_user
 from . import db
-from intasend import APIService
 import os
 import uuid
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash, generate_password_hash
 from PIL import Image, ImageOps
-from flask_mail import Message, Mail
+from flask_mail import Message
 from . import mail
 import base64
-from .forms import ShopItemsForm
 import cloudinary.uploader
 import openai
 import base64
 import requests
 import re
 import json
-from io import BytesIO
 
 
 

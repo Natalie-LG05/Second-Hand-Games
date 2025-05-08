@@ -3,23 +3,21 @@
 {% block title %} Home {% endblock %}
 
 {% block body %}
-
-<div class="container text-center" style="border-radius: 10px; ">
+<div class="container text-center" style="border-radius: 10px;">
     <div class="row" style="margin: 8px; background-color: rgb(51, 50, 55);" id="column">
         {% for item in items %}
-            <div class="col" style="background-color: rgb(51, 50, 55); margin: 10px;">
+            <div class="col-sm-6 col-md-4" style="background-color: rgb(51, 50, 55); margin-bottom: 20px;">
+                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="" style="height: 225px; width: 100%; border-radius: 10px; margin: 10px 0; object-fit: cover;">
             
-                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="" style="height: 225px; width: 300px; border-radius: 10px; margin: 10px; object-fit: cover;">
-
-                <div class="row" style="margin-top: 5px;">
+                <div class="row">
                     <h6 style="color: gray;">{{ item.product_name }}</h6>
                 </div>
 
                 <div class="row" style="margin-top: 10px;">
                 
                     <div class="col">
-
-                    <h5 style="font-weight: 600; font-family: 'Times New Roman', Times, serif;">${{ item.price }}</h5>
+                        <h5 style="font-weight: 600; font-family: 'Times New Roman', Times, serif;">${{ item.price }}</h5>
+                    </div>
                 </div>
 
                 <form action="/add-to-cart/{{ item.id }}" method="POST">
