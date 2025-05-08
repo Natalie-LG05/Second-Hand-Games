@@ -9,7 +9,7 @@
         <div class="row">
             {% for item in wishlist %}
             <div class="col-md-4 mb-4">
-                <div class="card h-100" style="background-color: rgb(18, 147, 27);">
+                <div class="card h-100" style="background-color:white;">
                     <img src="{{ url_for('static', filename='uploads/' + item.product.image) }}" alt="{{ item.product.product_name }}">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ item.product.product_name }}</h5>
