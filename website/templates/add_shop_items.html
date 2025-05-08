@@ -25,7 +25,7 @@
 
         <div class="mb-3">
             <label for="image_file" class="form-label">Upload Product Image</label>
-            <input class="form-control" type="file" id="image_file" name="image_file" accept="image/*">
+            <input class="form-control" type="file" id="image" name="image_file" accept="image/*">
         </div>
 
         <div class="mb-3" id="camera-input-div">
@@ -46,7 +46,7 @@
 
 <script>
     async function autoFillFields() {
-        const imageFile = document.getElementById('image_file').files[0];
+        const imageFile = document.getElementById('image').files[0];
 
         if (imageFile) {
             const formData = new FormData();
@@ -99,13 +99,13 @@
                     const pre = document.createElement("pre");
                     pre.id = "ai-debug";
                     pre.style = "background:#f9f9f9; padding:10px; margin-top:10px;";
-                    document.querySelector("form").appendChild(pre);
+                    document.querySelector("addItemForm").appendChild(pre);
                 }
                 document.getElementById("ai-debug").textContent = JSON.stringify(data, null, 2);
             }
         }
     }
-
+ 
     // Trigger on image selection
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("image").addEventListener("change", autoFillFields);
