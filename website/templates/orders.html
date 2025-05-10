@@ -1,0 +1,70 @@
+
+{% extends 'base.html' %}
+
+{% block title %} Orders {% endblock %}
+
+{% block body %}
+
+<div class="container my-5">
+
+    <div class="row">
+        {% if orders %}
+
+        <h1 class="text-center mb-5" style="color: rgb(108, 255, 115);">Orders</h1>
+        <div class="col-sm-13">
+            <div class="card" style="background-color:rgb(108, 255, 115);">
+                <div class="card-body">
+                    <!-- <h3>Orders</h3> -->
+                    {% for order in orders %}
+                        <div class="card mb-4" style="background-color: white;">
+                            <div class="card-header" style="background-color: white">
+                                <strong>Order #{{ order.id }}</strong> - {{ order.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                            </div>
+                            <div class="card-body">
+                                {% for item in order.order_items %}
+                                <div class="row mb-3">
+                                    <div class="col-sm-3 text-center align-self-center">
+                                        <img src="{{ url_for('static', filename='uploads/' ~ item.product.image) }}" alt="{{ item.product.product_name }}" class="img-fluid img-thumbnail shadow-sm" height="150px" width="150px">
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <h4>{{ item.product.product_name }}</h4>
+                                        <p class="mb-2 text-muted small">Quantity: {{item.quantity }}</p>
+                                        <p class="mb-2 text-muted small">Price: ${{ item.price }}</p>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p>Status: {{ item.status }}</p>
+                                        {% if item.status == 'Pending' %}
+                                            <div class="progress"><div class="progress-bar" style="width: 20%;"></div>
+                                        {% elif item.status == 'Accepted' %}
+                                            <div class="progress"><div class="progress-bar bg-info" style="width: 40%;"></div>
+                                        {% elif item.status == 'Out for delivery' %}
+                                            <div class="progress"><div class="progress-bar bg-warning" style="width: 70%;"></div>
+                                        {% elif item.status == 'Delivered' %}
+                                            <div class="progress"><div class="progress-bar bg-success" style="width: 100%;"></div>
+                                        {% elif item.status == 'Canceled' %}
+                                            <div class="progress"><div class="progress-bar bg-danger" style="width: 100%;"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <hr>
+                                <div class="text-end">
+                                    <strong>Total: ${{ order.total_price }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <h1 class="text-center mb-5" style="color:rgb(108, 255, 115);">You have no Orders</h1>
+
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

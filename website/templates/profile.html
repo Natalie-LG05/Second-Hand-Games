@@ -1,0 +1,113 @@
+
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h2>Your Profile</h2>
+
+    <!-- profile pic -->
+    <div class="mb-3">
+        {% if current_user.profile_picture and current_user.profile_picture != 'default.jpeg' %}
+            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" 
+                 alt="Profile Picture" class="rounded-circle profile-page-pic">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/default.jpeg') }}" 
+             alt="Profile Picture" class="rounded-circle profile-page-pic">
+        {% endif %}
+    </div>
+
+    <!-- update profile pic -->
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group mt-3">
+            <label for="profile_picture">Upload Profile Picture</label>
+            <input type="file" class="form-control" name="profile_picture" id="profile_picture">
+        </div>
+        <button type="submit" class="btn btn-custom mt-2" >Update Picture</button>
+    </form>
+
+    <hr>
+
+    <!-- Edit username, email, and phone number -->
+    <h4>Edit Your Info</h4>
+    <form method="POST" action="{{ url_for('views.update_profile') }}">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username" value="{{ user.username }}" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" value="{{ current_user.email }}">
+        </div>
+        <div class="form-group mt-3">
+            <label for="phone_number">Phone Number</label>
+            <input type="text" class="form-control" name="phone_number" value="{{ current_user.phone_number }}">
+        </div>
+        <button type="submit" class="btn btn-custom mt-2">Update info</button>
+    </form>
+
+    <hr>
+
+    <!-- change password -->
+    <h4>Change Password</h4>
+    <form method="POST" action="{{ url_for('views.change_password') }}">
+        <div class="form-group mt-3">
+            <label for="current_password">Current Password</label>
+            <input type="password" class="form_control" name="current_password" required>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="new_password">New Password</label>
+            <input type="password" name="new_password" id="new_password" required>
+        </div>
+
+        <button type="submit" class="btn btn-custom mt-2">Change Password</button>
+    </form>
+
+    <hr>
+
+    <h4>Your Orders</h4>
+    {% if orders %}
+        <ul class="list-group">
+            {% for order in orders %}
+                <li class="list-group-item">
+                    <strong>Order #{{ order.id }}</strong> - Status: {{ order.status }}, Date: {{ order.timestamp.strftime('%Y-%m-%d') }}
+                    <ul>
+                        {% for item in order.order_items %}
+                            <li>
+                                {{ item.product.product_name }} - Quantity: {{ order.quantity }}, Price: %{{ order.price }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't placed any orders yet.</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- recently viewed -->
+    <h4>Recently Viewed Products</h4>
+    {% if recenctly_viewed %}
+        <div class="row">
+            {% for product in recenctly_viewed %}
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100 bg-dark text-white">
+                        <img src="{{ url_for('static', filename='uploads/' + product.image) }}" class="card-img-top" alt="{{ product.product_name}}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.product_name }}</h5>
+                            <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-custom btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recently viewed products.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

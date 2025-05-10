@@ -1,0 +1,168 @@
+:root {
+    --primary-color: rgb(108, 255, 115);
+    --primary-dark: rgb(52, 131, 56);
+    --text-color: rgb(108, 255, 115);
+    --bg-color: rgb(31, 31, 32);
+    --border-color: rgb(108, 255, 115);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+a {
+    color: var(--main-text);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--highlight);
+}
+
+.d-flex .btn {
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--text-color);
+}
+.d-flex .btn:hover {
+    background: var(--primary-dark);
+    border: 2px solid var(--primary-dark);
+}
+
+#right1 :hover {
+    color: var(--primary-color);
+    transition: 300ms;
+}
+
+.row .right2 {
+    margin-left: -10px;
+    height: 180px;
+    width: 180px;
+    border-radius: 10px;
+}
+
+.container .row .col .row .col a {
+    background-color: var(--primary-color);
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.container .row .col .row .col a:hover {
+    background-color: var(--primary-dark);
+}
+
+#column :hover {
+    transform: scale(0.9);
+    transition: 450ms;
+    border-radius: 10px;
+}
+
+#items :hover {
+    color: var(--primary-color);
+    transition: 200ms;
+}
+
+.navbar-profile-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 1px solid var(--bg-color);
+}
+
+.profile-page-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-color);
+}
+
+.list-group-item {
+    background-color: var(--card-bg);
+    color: var(--main-text);
+    border: 1px solid var(--highlight);
+}
+
+.list-group-item:hover {
+    background-color: var(--highlight);
+    color: black;
+}
+
+.muted {
+    color: var(--muted-text);
+}
+.custom-box {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 7px;
+    margin: 5px;
+    color: var(--main-text);
+}
+
+.btn-custom {
+        background-color: rgb(108, 255, 115);
+        color: rgb(31, 31, 32) !important;
+    }
+
+.camera-display-div Video {
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    margin-top: 20px;}
+
+#canvas {
+    border: 2px solid #fff;
+    margin-top: 10px;
+}
+
+.equal-height-btn {
+    height: 50px;
+}
+
+/* rubik glitch font from google fonts */
+.turret-road-extralight {
+font-family: "Turret Road", sans-serif;
+font-weight: 200;
+font-style: normal;
+}
+
+.turret-road-light {
+font-family: "Turret Road", sans-serif;
+font-weight: 300;
+font-style: normal;
+}
+
+.turret-road-regular {
+font-family: "Turret Road", sans-serif;
+font-weight: 400;
+font-style: normal;
+}
+
+.turret-road-medium {
+font-family: "Turret Road", sans-serif;
+font-weight: 500;
+font-style: normal;
+}
+
+.turret-road-bold {
+font-family: "Turret Road", sans-serif;
+font-weight: 700;
+font-style: normal;
+}
+
+.turret-road-extrabold {
+font-family: "Turret Road", sans-serif;
+font-weight: 800;
+font-style: normal;
+}

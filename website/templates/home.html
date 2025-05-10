@@ -1,21 +1,34 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-  %}
-  <h1 align="center">Notes</h1>
-  <ul class="list-group list-group-flush" id="notes">
-    {% for note in user.notes %}
-    <li class="list-group-item">
-      {{ note.data }}
-      <button type="button" class="close" onClick="deleteNote({{ note.id }})">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </li>
-    {% endfor %}
-  </ul>
-  <form method="POST">
-    <textarea name="note" id="note" class="form-control"></textarea>
-    <br />
-    <div align="center">
-      <button type="submit" class="btn btn-primary">Add Note</button>
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block body %}
+<div class="container text-center" style="border-radius: 10px;">
+    <div class="row" style="margin: 8px; background-color: rgb(51, 50, 55);" id="column">
+        {% for item in items %}
+            <div class="col-sm-6 col-md-4" style="background-color: rgb(51, 50, 55); margin-bottom: 20px;">
+                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="" style="height: 225px; width: 100%; border-radius: 10px; margin: 10px 0; object-fit: cover;">
+            
+                <div class="row">
+                    <h6 style="color: gray;">{{ item.product_name }}</h6>
+                </div>
+
+                <div class="row" style="margin-top: 10px;">
+                
+                    <div class="col">
+                        <h5 style="font-weight: 600; font-family: 'Times New Roman', Times, serif;">${{ item.price }}</h5>
+                    </div>
+                </div>
+
+                <form action="/add-to-cart/{{ item.id }}" method="POST">
+                    <button type="submit" style="background-color: rgb(108, 255, 115)" class="btn btn-sm btn-custom">Add to Cart</button>
+                </form>
+
+            </div>
+
+    
+        {% endfor %}
     </div>
-  </form>
-  {% endblock %}
+</div>
+
+{% endblock %}

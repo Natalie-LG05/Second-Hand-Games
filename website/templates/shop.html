@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="shop-container">
+        <h1>Welcome to Our Shop</h1>
+
+        <div class="product-list">
+            {% for product in products %}
+                <div class="product-item" id="product-{{ product.id }}">
+                    <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.product_name }}" class="product-image">
+
+                    <div class="product-info">
+                        <h2>{{ product.product_name }}</h2>
+                        <p>{{ product.description }}</p>
+                        <p><strong>Price:</strong> ${{ product.price }}</p>
+
+                        <a href="{{ url_for('views.product_details', product_id=product.id) }}" class="btn btn-custom">View Details</a>
+
+                        <form action="{{ url_for('views.add_to_cart', item_id=product.id) }}" method="POST">
+                            <button type="submit" class="btn btn-custom">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Function to filter products by category
+        function filterByCategory() {
+            const filter = document.getElementById('category-filter').value;
+            const items = document.getElementsByClassName('product-item');
+
+            console.log("Selected Category Filter: ", filter); // Debugging the selected category filter
+
+            for (let item of items) {
+                const category = item.getAttribute('data-category');
+                console.log("Product Category in Data Attribute: ", category); // Debugging each product's category
+                
+                if (filter === 'all' || category === filter) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        }
+
+        // Initial call to apply the filter for any pre-selected category
+        document.addEventListener('DOMContentLoaded', () => {
+            filterByCategory(); // Call function on page load to ensure it's working with the default "all" filter
+        });
+    </script>
+
+    <style>
+        .shop-container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .shop-layout {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        /* filter sidebar */
+        .filter-sidebar {
+            width: 220px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0,.1);
+        }
+
+        .filter-sidebar select {
+            width: 100%;
+        }
+
+        /* product list */
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .product-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .product-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .product-info h2 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .product-info p {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .btn {
+            background-color:rgb(108, 255, 115);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color:rgb(10, 66, 13);
+        }
+
+    </style>
+{% endblock %}
